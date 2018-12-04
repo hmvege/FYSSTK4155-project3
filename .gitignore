@@ -1,0 +1,23 @@
+# Folders to ignore
+data*
+jack_code*
+papers*
+
+# Latex junk
+*.aux
+*.fls
+*.log
+*.out
+*.lock
+
+# OS junk
+*.DS_Store
+
+# Data files
+*.dat
+*.txt
+
+# Other random stuff
+*.bat
+*.pyc
+*.lpt
