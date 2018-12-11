@@ -9,6 +9,10 @@ papers*
 *.log
 *.out
 *.lock
+*.bbl
+*.blg
+*.fdb_latexmk
+*.gz
 
 # OS junk
 *.DS_Store

@@ -36,27 +36,26 @@ class CorrelatorAnalysis:
         self.N_BS = N_BS
 
     def plot(self, filename):
-        print (self.x, self.aM, self.aM_std.shape)
         plt.errorbar(self.x-1, y=self.aM, yerr=self.aM_std,
                      fmt="o", ecolor="r", color="0")
         plt.grid(True)
-        plt.xlim(0, 30)
+        plt.xlim(0, 21)
         plt.ylim(0.5, 1)
         plt.xlabel(r'$t$', fontsize=18)
         plt.ylabel(r'$aM_N = \ln\frac{G(t)}{G(t+a)}$', fontsize=18)
         plt.title(r'Effective mass $aM$, %s bootstraps' % self.N_BS)
         # plt.savefig('%s.pdf' % filename)
         print('figures/%s.pdf written' % filename)
-        # plt.show()
+        plt.show()
 
     def plot_raw(self):
         plt.figure()
         dat = np.mean(self.data, axis=1)
         dat_std = np.std(self.data, axis=1)
-        G = np.zeros(self.N_lattice_size)
-        G_std = np.zeros(self.N_lattice_size)
-        for i in range(self.N_lattice_size):
-            index = (i + 1) % self.N_lattice_size
+        G = np.zeros(self.N_correlators)
+        G_std = np.zeros(self.N_correlators)
+        for i in xrange(self.N_correlators):
+            index = (i + 1) % self.N_correlators
             G[i] = np.log(dat[i]/dat[index])  # Mod boundary conditions
             G_std[i] = np.sqrt((dat_std[i]/dat[i])**2 +
                                (dat_std[index]/dat[index])**2)
@@ -67,14 +66,14 @@ class CorrelatorAnalysis:
         plt.xlabel(r'$t$', fontsize=18)
         plt.ylabel(r'$aM_N = \ln\frac{G(t)}{G(t+a)}$', fontsize=18)
         plt.title(r'Effective mass $aM$, 0 bootstraps')
-        fig_name = "../fig/G_non_BS.pdf"
-        # plt.savefig(fig_name)
+        fig_name = "figures/G_non_BS.pdf"
+        plt.savefig(fig_name)
         print('{} written'.format(fig_name))
         plt.show()
 
     def write_bs_data(self, fname):
         dat = np.zeros((len(self.x), 2))
-        for i in range(len(self.x)):
+        for i in xrange(len(self.x)):
             dat[i, 0] = self.x[i]
             dat[i, 1] = self.aM[i]
         np.savetxt(fname, dat, fmt=["%5g", "%10g"])
@@ -113,18 +112,18 @@ def main():
 
     correlators, N_lattice_size, N_correlators = load_correlator(folder_name)
 
-    # plt.plot(correlators.mean(axis=1))
-    # plt.show()
+    plt.plot(correlators.mean(axis=1))
+    plt.show()
 
-    # print (correlators.shape)
+    print (correlators.shape)
     
-    # print(w_cov(correlators[0], correlators[0]))
-    # print(chi2(correlators, [1.0], [0.2], 1, 10))
+    print(w_cov(correlators[0], correlators[0]))
+    print(chi2(correlators, [1.0], [0.2], 1, 10))
 
     analysis = CorrelatorAnalysis(folder_name)
     analysis.run_bootstraps(250)
     analysis.plot("tmp")
-    analysis.plot_raw()
+
 
 if __name__ == '__main__':
     main()
