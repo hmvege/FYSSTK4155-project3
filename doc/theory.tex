@@ -101,8 +101,36 @@ Using an explicit scheme, namely forward Euler\citep[ch. 10.2.2]{hjorth-jensen_c
 Rewriting the left hand side of \eqref{eq:pde} using a second derivative approximation, we get
 \begin{align*}
 \frac{\partial^2 u(x,t)}{\partial x^2} &\approx \frac{u(x_i+\Delta x,t_j) - 2u(x_i,t_j) + u(x_i-\Delta x, t_j)}{\Delta x^2} \\
-u_{xx} &= \frac{u_{i+1,j} - 2u_{ij} + u_{i-1,j}}{\Delta x^2}
+u_{xx} &= \frac{u_{i+1,j} - 2u_{ij} + u_{i-1,j}}{\Delta x^2}.
 \end{align*}
+Setting these two numerical approximations equal to each other, we can solve for the next iteration in the time direction.
+\begin{align*}
+    u_{i,j+1} - u_{ij} = \alpha (u_{i+1,j} - 2 u_{ij} + u_{i-1,j}),
+\end{align*}
+with $\alpha = \frac{\Delta t}{\Delta x^2}$. Solving for $u_{i,j+1}$, we get
+\begin{align}
+    u_{i,j+1} = \alpha u_{i+1,j} + (1 - 2 \alpha) u_{ij} + \alpha u_{i-1,j}.
+    \label{eq:explicit-forward-euler-discretized}
+\end{align}
+With a keen eye we can recognize this as a simple iterative matrix equation,
+\begin{align}
+    V^{j+1} = (I - \alpha D) V^j,
+    \label{eq:fw-euler-matrix}
+\end{align}
+with $I$ simply being the identity matrix and $D$ being a tridiagonal matrix of with $-1$ along the of-diagonals and $2$ at the diagonal.
+% \begin{align}
+%     D = \begin{pmatrix}
+%         2 & -1 & 0 & \cdots & \cdots & 0 \\
+%         -1 & 2 & -1 & \cdots & \cdots & 0 \\
+%         0 & -1 & 2 & \cdots & \cdots & 0 \\
+%         \vdots &  &  & \ddots & & \vdots \\
+%         0 & \cdots & \cdots & \cdots & 2 & -1 \\
+%         0 & \cdots & \cdots & \cdots & -1 & 2 \\
+%     \end{pmatrix}
+% \end{align}
+
+\subsubsection{Stability condition of explicit Forward Euler}
+The stability condition of Forward Euler is given as $\alpha = \frac{\Delta t}{\Delta x^2} \leq 1/2$. To prove this, we 
 
 \subsection{Deep Neural Networks and PDEs}
 A full derivation of DNNs will not be given here\footnote{A \textit{more} complete derivation can be found \href{https://github.com/hmvege/StatML/blob/master/doc/backpropagation.pdf}{here}.}, as we will mainly focus on how to apply DNNs to solving PDEs.
