@@ -21,3 +21,90 @@
 
 % \subsection{Extracting states with machine learning}
 
+\subsection{A solution to the heat equation}
+The partial differential equation we will be investigating is commonly dubbed the heat equation, and has the following shape
+\begin{align}
+    \frac{\partial^2 u(x,y)}{\partial x^2} = \frac{\partial u(x,t)}{\partial t}
+    \label{eq:pde}
+\end{align}
+given that $t>0$, $x\in [0,L]$. As a shorthand notation, we can write this system as $u_{xx} = u_{t}$. The initial conditions are given as,
+\begin{align}
+    u(x,0) = \sin(\pi x)
+    \label{eq:initial-conds}
+\end{align}
+for $0 < x < L$ and $L = 1$. The boundary conditions are given as,
+\begin{align}
+    \begin{split}
+        u(0,t) = 0 \\
+        u(0,L) = 0
+    \end{split}
+    \label{eq:boundary-conditions}
+\end{align}
+To derive an analytical solution for our PDE, we begin by assuming that the variables are separable,
+\begin{align*}
+    u(x,t) = X(x)T(t).
+\end{align*}
+Inserting this into the PDE \eqref{eq:pde}, we get
+\begin{align*}
+    \frac{\partial^2 \left(X(x)T(t)\right)}{\partial x^2} = \frac{\partial \left(X(x)T(t)\right)}{\partial t}.
+\end{align*}
+This becomes,
+\begin{align*}
+    \frac{1}{X(x)}\frac{\partial^2 X(x)}{\partial x^2} = \frac{1}{T(t)}\frac{\partial T(t)}{\partial t},
+\end{align*}
+in which we see that each side does not depend on the other, such that they are equal to a constant. Calling this constant $-k^2$, we can solve each of them separately. We begin with the temporal part,
+\begin{align*}
+    \frac{1}{T(t)}\frac{\partial T(t)}{\partial t} = -k^2,
+\end{align*}
+which has the solution
+\begin{align*}
+    V(t) = a \e{-k^2t}.
+\end{align*}
+For the spatial part, we get
+\begin{align}
+    \frac{1}{X(x)}\frac{\partial^2 X(x)}{\partial x^2} = -k^2
+    \label{eq:pde-temporal-general}
+\end{align}
+which we can see has a solution given as\cite{boas_mathematical_2006},
+\begin{align}
+    X(x) = b\sin(kx).
+    \label{eq:pde-spatial-general}
+\end{align}
+We now need to find $a$, $b$ and $k$. From the initial conditions requirement\eqref{eq:initial-conds}, we get
+\begin{align*}
+    u(x,t=0) = b\sin(kx) \cdot 1
+\end{align*}
+Requiring $b=1$ fulfills the initial condition requirement\eqref{eq:initial-conds}. If we then look at the boundary conditions\eqref{eq:boundary-conditions},
+\begin{align*}
+    u(0,t) &= \sin(k\cdot 0)\e{-k^2t} = 0 \\
+    u(L,t) &= \sin(k\cdot L)\e{-k^2t} = 0,
+\end{align*}
+with the last line giving us that,
+\begin{align*}
+    kL &= \sin (0) \\
+    kL &= n \pi \\
+    k &= \frac{n\pi}{L}.
+\end{align*}
+Summing up, we then have our analytical solution
+\begin{align}
+    u(x,t) = \sin\left(\frac{n\pi x}{L}\right)\e{-\left(\frac{n\pi}{L}\right)t}
+    \label{eq:pde-analytical-solution}
+\end{align}
+We can further set $n=1$ and $L=1$, as that will match the initial conditions in equation \eqref{eq:initial-conds}.
+
+\subsection{Forward Euler and finite differences}
+Using an explicit scheme, namely forward Euler\citep[ch. 10.2.2]{hjorth-jensen_computational_2015}, the basis for this scheme is in how to approximate the derivative. Using the familiar forward formula for the derivative, we can write the right hand side of \eqref{eq:pde} as,
+\begin{align*}
+    \frac{\partial u(x,t)}{\partial t} &\approx \frac{u(x_i, t_j + \Delta t) - u(x_i, t_j)}{\Delta t} \\
+    u_t &= \frac{u_{i,j+1} - u_{ij}}{\Delta t}.
+\end{align*}
+Rewriting the left hand side of \eqref{eq:pde} using a second derivative approximation, we get
+\begin{align*}
+\frac{\partial^2 u(x,t)}{\partial x^2} &\approx \frac{u(x_i+\Delta x,t_j) - 2u(x_i,t_j) + u(x_i-\Delta x, t_j)}{\Delta x^2} \\
+u_{xx} &= \frac{u_{i+1,j} - 2u_{ij} + u_{i-1,j}}{\Delta x^2}
+\end{align*}
+
+\subsection{Deep Neural Networks and PDEs}
+A full derivation of DNNs will not be given here\footnote{A \textit{more} complete derivation can be found \href{https://github.com/hmvege/StatML/blob/master/doc/backpropagation.pdf}{here}.}, as we will mainly focus on how to apply DNNs to solving PDEs.
+
+
