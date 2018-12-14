@@ -51,7 +51,7 @@ class DataWriter:
 
 
 def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
-            optimizer, num_iter, dropout_rate=0.0):
+            optimizer, num_iter, dropout_rate=0.0, freq=100):
 
     tf.reset_default_graph()
 
@@ -133,7 +133,7 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
         for i in trange(num_iter, desc="Training dnn"):
             sess.run(training_op)
 
-            if i % 100 == 0:
+            if i % freq == 0:
                 tqdm.write("Cost: {0:.8f}".format(loss.eval()))
 
         g_analytic = g_analytic.eval()
@@ -243,7 +243,7 @@ def run():
                            "\nDropout rate:        {3:2f}".format(
                                str(hidden_neurons), key_opt, key_act, dr)))
                     res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
-                                   opt, num_iter, dropout_rate=dr)
+                                   opt, num_iter, dropout_rate=dr, freq=1000)
                     # exit("\n\nTEST RUN DONE\n\n")
 
                     io.write_to_json(hidden_neurons, key_opt,
