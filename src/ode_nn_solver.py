@@ -240,7 +240,7 @@ def run():
 
     threads = 8
 
-    output_file = "../results/productionRun_{0:d}iter.json".format(num_iter)
+    output_file = "../results/productionRun2_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
     t_np = np.linspace(t0, t1, Nt)
