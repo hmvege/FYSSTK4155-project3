@@ -10,13 +10,14 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import axes3d
 from sklearn.metrics import r2_score, mean_squared_error
 
+
 class DataWriter:
     def __init__(self, filename, overwrite=False):
         self.filename = filename
         self.overwrite = overwrite
 
     def write_to_json(self, hidden_neurons, key_opt, key_act, dr, num_iter,
-                      G_analytic, G_dnn, diff, max_diff, r2, mse, cost, 
+                      G_analytic, G_dnn, diff, max_diff, r2, mse, cost,
                       duration):
 
         if os.path.isfile(self.filename) and not self.overwrite:
@@ -51,6 +52,7 @@ class DataWriter:
 #   | |/ _ \ '_ \/ __|/ _ \| '__| |_| |/ _ \ \ /\ / / | |   / _ \| '__/ _ \
 #   | |  __/ | | \__ \ (_) | |  |  _| | (_) \ V  V /  | |__| (_) | | |  __/
 #   |_|\___|_| |_|___/\___/|_|  |_| |_|\___/ \_/\_/    \____\___/|_|  \___|
+
 
 def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
             optimizer, num_iter, dropout_rate=0.0, freq=100, threads=4):
@@ -210,15 +212,15 @@ def run():
 
     # Future run:
     # timing_hidden_neurons = [
-    #     [10], 
-    #     [20], 
-    #     [30], 
-    #     [40], 
-    #     [50], 
-    #     [60], 
-    #     [70], 
-    #     [80], 
-    #     [90], 
+    #     [10],
+    #     [20],
+    #     [30],
+    #     [40],
+    #     [50],
+    #     [60],
+    #     [70],
+    #     [80],
+    #     [90],
     #     [100],
     # ]
 
@@ -231,7 +233,7 @@ def run():
     x0 = 0.0
     L = 1.0
     t0 = 0.0
-    t1 = 1.0
+    t1 = 0.5  # Most of the interesting information is in the 0-0.5 area
 
     Nx = 10
     Nt = 10
@@ -274,7 +276,7 @@ def run():
                            "\nDropout rate:        {3:2f}".format(
                                str(hidden_neurons), key_opt, key_act, dr)))
                     res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
-                                   opt, num_iter, dropout_rate=dr, freq=1000, 
+                                   opt, num_iter, dropout_rate=dr, freq=1000,
                                    threads=threads)
                     # exit("\n\nTEST RUN DONE\n\n")
 
@@ -292,12 +294,11 @@ def task_c():
     L = 1.0
     t0 = 0.0
     t1 = 0.5
-    t2 = 1.0
 
     Nx = 10
     Nt = 10
 
-    num_iter = 100000
+    num_iter = 10000
     num_hidden_neurons = [90]
 
     x_np = np.linspace(x0, L, Nx)
@@ -424,8 +425,8 @@ def task_d():
 
 def main():
     tf.reset_default_graph()
-    run()
-    # task_c()
+    # run()
+    task_c()
     # task_d()
 
 

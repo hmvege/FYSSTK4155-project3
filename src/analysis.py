@@ -95,6 +95,7 @@ def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
     Forward Euler timing data.
     step-size vs time.
     """
+
     fixed_Nx = 10
     fixed_Nt = 10
     fw_values = []
@@ -150,9 +151,62 @@ def plotTimingComparison(tf_data, fw_timing_data):
     # ax1.plot()
 
 
-def plotFWData(data, analytical_y):
-    print(len(data["data"]))
+def plotFW3DData(data, analytical_y):
+    for fw_ in data["data"][-1:]:
+        # Forward Euler timing data
+        # step-size vs time
+        fixed_Nx = 10
+        fixed_Nt = 10
+        fw_values = []
 
+        Y_fw = np.array(fw_["data"])
+
+        # fig, ax = plt.subplots()
+        # heatmap = ax.pcolor(Y_fw, edgecolors="k")
+        # cbar = plt.colorbar(heatmap, ax=ax)
+        # plt.show()
+        # print(Y_fw.shape)
+        # exit()
+        # continue
+        x_np = np.linspace(0.0, 1.0, Y_fw.shape[1])
+        t_np = np.linspace(0.0, 0.5, Y_fw.shape[0])
+        XX, TT = np.meshgrid(x_np, t_np)
+
+        Y_analytic = np.sin(np.pi*XX)*np.exp(-np.pi*np.pi*TT)
+
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("Forward-Euler")
+        s = ax.plot_surface(XX, TT, Y_fw, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+        fig.savefig("../fig/fw_3d_Nt{}.pdf".format(Y_fw.shape[0]))
+
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("Analytical solution")
+        s = ax.plot_surface(XX, TT, Y_analytic, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+
+        diff = Y_analytic - Y_fw
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("Difference")
+        s = ax.plot_surface(XX, TT, diff, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+        fig.savefig("../fig/fw_ana_diff_3d_Nt{}.pdf".format(Y_fw.shape[0]))
+        plt.close(fig)
+
+
+def plotFWData(data, analytical_y):
     # Forward Euler timing data
     # step-size vs time
     fixed_Nx = 10
@@ -163,17 +217,33 @@ def plotFWData(data, analytical_y):
     ax1 = fig1.add_subplot(211)
     ax2 = fig1.add_subplot(212)
 
-    print (np.array(analytical_y)[0], data["data"][-1]["data"][-1])
+    # print (np.array(analytical_y).shape)
+    Y_fw = np.array(data["data"][-4]["data"])
+
+    print(Y_fw.shape)
+
+    x_np = np.linspace(0.0, 1.0, fixed_Nx)
+    t_np = np.linspace(0.0, 0.5, Y_fw.shape[0])
+    XX, TT = np.meshgrid(x_np, t_np)
+
+    Y_analytic = np.sin(np.pi*XX)*np.exp(-np.pi*np.pi*TT)
+
+    plt.show()
+    plt.close(fig)
+
+    exit(1)
 
     for fw_ in data["data"]:
-        print (fw_["Nx"], fixed_Nx, fw_["Nt"], fixed_Nt)
+        print(fw_["Nx"], fixed_Nx, fw_["Nt"], fixed_Nt)
         if (fw_["Nx"] == fixed_Nx):
 
             print(fw_["data"].shape)
             fw_values.append(fw_["data"])
-            ax1.plot(fw_["data"][-1], label=r"$\alpha={0:.1e}$".format(fw_["alpha"]))
+            ax1.plot(fw_["data"][-1],
+                     label=r"$\alpha={0:.1e}$".format(fw_["alpha"]))
 
-            ax2.semilogy(np.abs(fw_["data"][-1] - analytical_y), label=r"$\alpha={0:.1e}$".format(fw_["alpha"]))
+            ax2.semilogy(np.abs(fw_["data"][-1] - analytical_y),
+                         label=r"$\alpha={0:.1e}$".format(fw_["alpha"]))
 
     ax1.set_ylabel(r"$u_{\mathrm{FW}}$")
     ax2.set_ylabel(r"$|u_{\mathrm{FW}} - u_{\mathrm{Analytical}}|$")
@@ -188,9 +258,13 @@ def plotFWData(data, analytical_y):
 
     plt.show()
 
+
 def plotComparison(tf_data, fw_data):
 
     print(tf_data["data"][0].keys())
+    print(tf_data["data"][0]["G_analytic"][0])
+    for i in fw_data["data"]:
+        print(i["data"][-1])
     exit(1)
     # Plots results
     XX, TT = np.meshgrid(x_np, t_np)
@@ -221,8 +295,29 @@ def plotComparison(tf_data, fw_data):
     plt.show()
 
 
-def generateTFTableData(tf_data):
-    pass
+def generateTFTableData(tf_data,
+                        table_filename="../results/dnn_general_table.txt"):
+    """Generates data for pgfplotstable."""
+    table_length = 0
+
+    with open(table_filename, "w") as f:
+        header = (r"$Optimizer$ $Activation$ $Layers$ "
+                  r"$\mathrm{max}(\varepsilon_{\mathrm{abs}}|)$ "
+                  r"$R^2$ $MSE$ $\Delta t$")
+        f.write(header)
+        f.write("\n")
+        for i, tf_ in enumerate(tf_data["data"]):
+            if tf_["dropout"] != 0.0:
+                table_length += 1
+                continue
+            # print(i, tf_.keys())
+            print(tf_["optimizer"], tf_["activation"],
+                  ", ".join([str(s_) for s_ in tf_["hidden_layers"]]),
+                  tf_["max_diff"], tf_["r2"], tf_["mse"], tf_["duration"],
+                  file=f)
+
+    print("Table of length {} written to file {}.".format(
+        table_length, table_filename))
 
 
 def generateTFDropoutTableData(tf_data):
@@ -242,17 +337,20 @@ def main():
 
     # fw_data_file_folder = ("/Users/hansmathiasmamenvege/Programming"
     #                        "/COMPHYS1/projects/project5/Diffusion/output")
-    fw_data_file_folder = ("../results/")
-    fw_data = load_finite_difference_data(fw_data_file_folder)
+    # fw_data_file_folder = ("../results/")
+    fw_data_file_folder = ("../results/forward_euler_results")
+    fw_data = load_finite_difference_data(fw_data_file_folder,
+                                          try_get_pickle=True)
 
-    plotTimingFW(fw_timing_data)
+    # plotTimingFW(fw_timing_data)
     # plotTimingComparison(tf_data, fw_timing_data)
 
+    # plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
-    plotComparison(tf_data, fw_data)
-    exit("COMPLETED")
+    # plotComparison(tf_data, fw_data)
 
     generateTFTableData(tf_data)
+    exit("COMPLETED")
 
     generateTFDropoutTableData(tf_data)
 
