@@ -51,7 +51,7 @@ class DataWriter:
 
 
 def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
-            optimizer, num_iter, dropout_rate=0.0, freq=100):
+            optimizer, num_iter, dropout_rate=0.0, freq=100, threads=4):
 
     tf.reset_default_graph()
 
@@ -126,9 +126,12 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
     g_analytic = tf.sin(np.pi*x)*tf.exp(-np.pi*np.pi*t)
     g_dnn = None
 
+    config = tf.ConfigProto()
+    config.intra_op_parallelism_threads = threads
+
     t0 = time.time()
     # Execution phase
-    with tf.Session() as sess:
+    with tf.Session(config=config) as sess:
         init.run()
         for i in trange(num_iter, desc="Training dnn"):
             sess.run(training_op)
@@ -209,6 +212,8 @@ def run():
 
     num_iter = 100000  # Default should be 10^5
 
+    threads = 8
+
     output_file = "../results/productionRun_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
@@ -243,7 +248,8 @@ def run():
                            "\nDropout rate:        {3:2f}".format(
                                str(hidden_neurons), key_opt, key_act, dr)))
                     res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
-                                   opt, num_iter, dropout_rate=dr, freq=1000)
+                                   opt, num_iter, dropout_rate=dr, freq=1000, 
+                                   threads=threads)
                     # exit("\n\nTEST RUN DONE\n\n")
 
                     io.write_to_json(hidden_neurons, key_opt,
