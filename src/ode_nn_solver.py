@@ -209,7 +209,7 @@ def run():
 
     num_iter = 100000  # Default should be 10^5
 
-    output_file = "../results/productionRun_{d}iter.json".format(num_iter)
+    output_file = "../results/productionRun_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
     t_np = np.linspace(t0, t1, Nt)
