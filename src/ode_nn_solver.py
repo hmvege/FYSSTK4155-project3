@@ -5,13 +5,10 @@ import json
 import time
 import os
 
-from sklearn.metrics import r2_score, mean_squared_error
-
 from tqdm import tqdm, trange
-
 from matplotlib import cm
 from mpl_toolkits.mplot3d import axes3d
-
+from sklearn.metrics import r2_score, mean_squared_error
 
 class DataWriter:
     def __init__(self, filename, overwrite=False):
@@ -49,6 +46,11 @@ class DataWriter:
         with open(self.filename, "w+") as json_file:
             json.dump(json_dict, json_file, indent=4)
 
+#  _____                          __ _                  ____
+# |_   _|__ _ __  ___  ___  _ __ / _| | _____      __  / ___|___  _ __ ___
+#   | |/ _ \ '_ \/ __|/ _ \| '__| |_| |/ _ \ \ /\ / / | |   / _ \| '__/ _ \
+#   | |  __/ | | \__ \ (_) | |  |  _| | (_) \ V  V /  | |__| (_) | | |  __/
+#   |_|\___|_| |_|___/\___/|_|  |_| |_|\___/ \_/\_/    \____\___/|_|  \___|
 
 def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
             optimizer, num_iter, dropout_rate=0.0, freq=100, threads=4):
@@ -163,6 +165,12 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 
     return G_analytic, G_dnn, diff, max_diff, r2, mse, cost, duration
 
+
+#  ____                 ____            _             _
+# |  _ \ _   _ _ __    / ___|___  _ __ | |_ _ __ ___ | |
+# | |_) | | | | '_ \  | |   / _ \| '_ \| __| '__/ _ \| |
+# |  _ <| |_| | | | | | |__| (_) | | | | |_| | | (_) | |
+# |_| \_\\__,_|_| |_|  \____\___/|_| |_|\__|_|  \___/|_|
 
 def run():
 
