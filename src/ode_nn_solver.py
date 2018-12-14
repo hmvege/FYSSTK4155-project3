@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
+import json
+import time
+import os
 
 from sklearn.metrics import r2_score, mean_squared_error
 
@@ -10,8 +13,50 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import axes3d
 
 
+class DataWriter:
+    def __init__(self, filename, overwrite=False):
+        self.filename = filename
+        self.overwrite = overwrite
+
+    def write_to_json(self, hidden_neurons, key_opt, key_act, dr, num_iter,
+                      G_analytic, G_dnn, diff, max_diff, r2, mse, cost, 
+                      duration):
+
+        if os.path.isfile(self.filename) and not self.overwrite:
+            json_dict = json.load(open(self.filename, "r"))
+        else:
+            json_dict = {"data": []}
+
+        data = {
+            "num_iter": num_iter,
+            "hidden_layers": hidden_neurons,
+            "optimizer": key_opt,
+            "activation": key_act,
+            "dropout": dr,
+            "G_analytic": G_analytic.tolist(),
+            "G_dnn": G_dnn.tolist(),
+            "diff": diff.tolist(),
+            "max_diff": max_diff,
+            "r2": r2,
+            "mse": mse,
+            "cost": float(cost),
+            "duration": duration,
+        }
+
+        # Opens json
+        json_dict["data"].append(data)
+
+        with open(self.filename, "w+") as json_file:
+            json.dump(json_dict, json_file, indent=4)
+
+
 def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
-            optimizer, dropout_rate=0.0):
+            optimizer, num_iter, dropout_rate=0.0):
+
+    tf.reset_default_graph()
+
+    Nx = X.shape[0]
+    Nt = T.shape[0]
 
     x = X.ravel()
     t = T.ravel()
@@ -81,6 +126,7 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
     g_analytic = tf.sin(np.pi*x)*tf.exp(-np.pi*np.pi*t)
     g_dnn = None
 
+    t0 = time.time()
     # Execution phase
     with tf.Session() as sess:
         init.run()
@@ -92,6 +138,11 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 
         g_analytic = g_analytic.eval()
         g_dnn = g_trial.eval()
+
+        # A final cost evaluation
+        cost = loss.eval()
+
+    t1 = time.time()
 
     # Compare nn solution with analytical solution
     difference = np.abs(g_analytic - g_dnn)
@@ -105,24 +156,103 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
     r2 = r2_score(g_analytic, g_dnn)
     mse = mean_squared_error(g_analytic, g_dnn)
 
-    return G_analytic, G_dnn, diff, max_diff, r2, mse
+    duration = t1-t0
+
+    return G_analytic, G_dnn, diff, max_diff, r2, mse, cost, duration
 
 
 def run():
 
-    optimizers = [
-        tf.train.AdamOptimizer(),
-        tf.train.GradientDescentOptimizer(learning_rate)]
+    learning_rate = 0.01
 
-    activation_functions = [
-        tf.nn.sigmoid,
-        tf.nn.relu,
-        tf.sigmoid,
-        tf.tanh,
-        tf.leaky_relu,
+    optimizers = {
+        "adam": tf.train.AdamOptimizer(),
+        "gd": tf.train.GradientDescentOptimizer(learning_rate),
+    }
+
+    activation_functions = {
+        "sigmoid": tf.nn.sigmoid,
+        "relu": tf.nn.relu,
+        "tanh": tf.tanh,
+        "leaky_relu": tf.nn.leaky_relu,
+    }
+
+    dropout_rates = [0.0, 0.25, 0.5]
+
+    num_hidden_neurons = [
+        [10],
+        [20],
+        [50],
+        [100],
+        [1000],
+        [10, 10],
+        [20, 20],
+        [40, 40],
+        [80, 80],
+        [10, 10, 10],
+        [20, 20, 20],
+        [40, 40, 40],
+        # [100, 100, 100],
+        [10, 10, 10, 10, 10],
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     ]
 
-    
+    # Sets up data parameters
+    x0 = 0.0
+    L = 1.0
+    t0 = 0.0
+    t1 = 0.5
+    t2 = 1.0
+
+    Nx = 10
+    Nt = 10
+
+    num_iter = 100000  # Default should be 10^5
+
+    output_file = "../results/testrun_10iter.json"
+
+    x_np = np.linspace(x0, L, Nx)
+    t_np = np.linspace(t0, t1, Nt)
+
+    X, T = np.meshgrid(x_np, t_np)
+
+    io = DataWriter(output_file)
+
+    t0 = time.time()
+
+    for hidden_neurons in num_hidden_neurons:
+        for key_opt, opt in optimizers.items():
+            for key_act, act in activation_functions.items():
+                for dr in dropout_rates:
+
+                    if dr != 0.0:
+                        # Will only run with dropout for following layer
+                        # combinations:
+                        if not (hidden_neurons == [10, 10, 10] or
+                                hidden_neurons == [20, 20, 20] or
+                                hidden_neurons == [40, 40, 40]):
+                            print("\nSkipping {} {} {} {}".format(
+                                str(hidden_neurons), key_opt, key_act, dr))
+                            continue
+
+                    print(("\n===================================="
+                           "\nRUN PARAMETERS:: "
+                           "\nHidden neurons:      {0:s}"
+                           "\nOptimizer:           {1:s}"
+                           "\nActivation function: {2:s}"
+                           "\nDropout rate:        {3:2f}".format(
+                               str(hidden_neurons), key_opt, key_act, dr)))
+                    res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
+                                   opt, num_iter, dropout_rate=dr)
+                    # exit("\n\nTEST RUN DONE\n\n")
+
+                    io.write_to_json(hidden_neurons, key_opt,
+                                     key_act, dr, num_iter, *res_)
+
+    t1 = time.time()
+    dur = t1-t0
+    print(("\n===================================="
+           "\nPROGRAM COMPLETE. DURATION: {}".format(dur)))
 
 
 def task_c():
@@ -262,7 +392,8 @@ def task_d():
 
 def main():
     tf.reset_default_graph()
-    task_c()
+    run()
+    # task_c()
     # task_d()
 
 
