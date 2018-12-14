@@ -25,3 +25,5 @@ papers*
 *.bat
 *.pyc
 *.lpt
+*.pkl
+results

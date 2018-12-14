@@ -208,12 +208,30 @@ def run():
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     ]
 
+    # Future run:
+    # timing_hidden_neurons = [
+    #     [10], 
+    #     [20], 
+    #     [30], 
+    #     [40], 
+    #     [50], 
+    #     [60], 
+    #     [70], 
+    #     [80], 
+    #     [90], 
+    #     [100],
+    # ]
+
+    # Future run:
+    # optimum_layer_sizes = [
+    #     [],
+    # ]
+
     # Sets up data parameters
     x0 = 0.0
     L = 1.0
     t0 = 0.0
-    t1 = 0.5
-    t2 = 1.0
+    t1 = 1.0
 
     Nx = 10
     Nt = 10
@@ -231,7 +249,7 @@ def run():
 
     io = DataWriter(output_file)
 
-    t0 = time.time()
+    timer0 = time.time()
 
     for hidden_neurons in num_hidden_neurons:
         for key_opt, opt in optimizers.items():
@@ -263,8 +281,8 @@ def run():
                     io.write_to_json(hidden_neurons, key_opt,
                                      key_act, dr, num_iter, *res_)
 
-    t1 = time.time()
-    dur = t1-t0
+    timer1 = time.time()
+    dur = timer1-timer0
     print(("\n===================================="
            "\nPROGRAM COMPLETE. DURATION: {}".format(dur)))
 
