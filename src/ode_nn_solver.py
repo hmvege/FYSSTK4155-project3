@@ -180,17 +180,21 @@ def run():
 
     optimizers = {
         "adam": tf.train.AdamOptimizer(),
-        "gd": tf.train.GradientDescentOptimizer(learning_rate),
+        # "gd": tf.train.GradientDescentOptimizer(learning_rate),
     }
 
     activation_functions = {
-        "sigmoid": tf.nn.sigmoid,
-        "relu": tf.nn.relu,
+        # "sigmoid": tf.nn.sigmoid,
+        # "relu": tf.nn.relu,
         "tanh": tf.tanh,
-        "leaky_relu": tf.nn.leaky_relu,
+        # "leaky_relu": tf.nn.leaky_relu,
     }
 
-    dropout_rates = [0.0, 0.25, 0.5]
+    dropout_rates = [
+        0.0,
+        # 0.25,
+        # 0.5
+    ]
 
     num_hidden_neurons = [
         [10],
@@ -211,18 +215,19 @@ def run():
     ]
 
     # Future run:
-    # timing_hidden_neurons = [
-    #     [10],
-    #     [20],
-    #     [30],
-    #     [40],
-    #     [50],
-    #     [60],
-    #     [70],
-    #     [80],
-    #     [90],
-    #     [100],
-    # ]
+    timing_hidden_neurons = [
+        [10],
+        [20],
+        [30],
+        [40],
+        [50],
+        [60],
+        [70],
+        [80],
+        [90],
+        [100],
+    ]
+    num_hidden_neurons = timing_hidden_neurons
 
     # Future run:
     # optimum_layer_sizes = [
@@ -242,7 +247,7 @@ def run():
 
     threads = 8
 
-    output_file = "../results/productionRun2_{0:d}iter.json".format(num_iter)
+    output_file = "../results/TimingRun1_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
     t_np = np.linspace(t0, t1, Nt)
@@ -425,8 +430,8 @@ def task_d():
 
 def main():
     tf.reset_default_graph()
-    # run()
-    task_c()
+    run()
+    # task_c()
     # task_d()
 
 

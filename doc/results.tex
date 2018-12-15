@@ -1,1 +1,39 @@
 \section{Results}
+
+
+\subsection{Deep Neural Net}
+We will now proceed with presenting results for a deep neural net in the table \ref{tab:dnn_general_results}, put together using different hyper parameters. Combinations where put together from different amount of layers, neurons on each layer, activation functions and optimizers. The results were retrieved running $N_\mathrm{epochs}=10^5$ epochs and having a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$. To evaluate the performance we look at the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse}. The $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
+\begin{table}[h!tb]
+    \centering
+    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{epochs}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$. }
+    \pgfplotstabletypeset[
+        every head row/.style={before row=\toprule,after row=\midrule},
+        every last row/.style={after row=\bottomrule},
+        columns/optimizer/.style={string type, column name={Optimizer}},
+        columns/activation/.style={string type, column name={Activation}},
+        columns/layers/.style={string type, column name={Layers}},
+        columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
+        columns/r2/.style={sci, column name=$R^2$},
+        columns/mse/.style={sci, column name=$MSE$},
+        columns/time/.style={sci, column name=$\Delta t$}
+    ]{../results/dnn_general_table.dat}
+    \label{tab:dnn_general_results}
+\end{table}
+
+We also run with a dropout rates of $\epsilon_\mathrm{Dropout}=0.25, 0.5$. The results can be viewed in following table
+\begin{table}[h!tb]
+    \centering
+    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{epochs}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.25, 0.5$.}
+    \pgfplotstabletypeset[
+        every head row/.style={before row=\toprule,after row=\midrule},
+        every last row/.style={after row=\bottomrule},
+        columns/optimizer/.style={string type, column name={Optimizer}},
+        columns/activation/.style={string type, column name={Activation}},
+        columns/layers/.style={string type, column name={Layers}},
+        columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
+        columns/r2/.style={sci, column name=$R^2$},
+        columns/mse/.style={sci, column name=$MSE$},
+        columns/dropout/.style={column name=$\epsilon_\mathrm{Dropout}$}
+    ]{../results/dnn_dropout_table.dat}
+    \label{tab:dnn_dropout_results}
+\end{table}

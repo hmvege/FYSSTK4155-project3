@@ -6,6 +6,11 @@
 \usepackage{amsfonts}
 \usepackage{enumerate}
 
+% For including pgf tables
+\usepackage{pgfplotstable}
+\usepackage{booktabs}
+\usepackage{mathpazo}
+
 % For proper referencing in article
 \usepackage{hyperref}
 \usepackage{url}
@@ -34,6 +39,14 @@
 
 % For having latex symbols in section titles
 \usepackage{epstopdf}
+
+\pgfplotsset{compat=1.16}
+
+\pgfplotstableset{
+    every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule}
+}
+
 
 % For proper citations
 % \usepackage[round, authoryear]{natbib}

@@ -296,32 +296,79 @@ def plotComparison(tf_data, fw_data):
 
 
 def generateTFTableData(tf_data,
-                        table_filename="../results/dnn_general_table.txt"):
+                        table_filename="../results/dnn_general_table.dat"):
     """Generates data for pgfplotstable."""
     table_length = 0
 
     with open(table_filename, "w") as f:
-        header = (r"$Optimizer$ $Activation$ $Layers$ "
-                  r"$\mathrm{max}(\varepsilon_{\mathrm{abs}}|)$ "
-                  r"$R^2$ $MSE$ $\Delta t$")
+        # header = (r"{$Optimizer$} {$Activation$} {$Layers$} "
+        #           r"{$\mathrm{max}(\varepsilon_{\mathrm{abs}}|)$} "
+        #           r"{$R^2$} {$MSE$} {$\Delta t$}")
+        header = "optimizer activation layers diff r2 mse time"
         f.write(header)
         f.write("\n")
-        for i, tf_ in enumerate(tf_data["data"]):
+        for i, tf_ in enumerate(sorted(tf_data["data"],
+                                       key=lambda k: (k["optimizer"],
+                                                      k["activation"]))):
+
             if tf_["dropout"] != 0.0:
-                table_length += 1
                 continue
-            # print(i, tf_.keys())
-            print(tf_["optimizer"], tf_["activation"],
-                  ", ".join([str(s_) for s_ in tf_["hidden_layers"]]),
-                  tf_["max_diff"], tf_["r2"], tf_["mse"], tf_["duration"],
-                  file=f)
+
+            table_length += 1
+
+            print(
+                "{0:15s}".format(tf_["optimizer"].capitalize()),
+                "{0:15s}".format(
+                    "{"+tf_["activation"].capitalize().replace("_", " ")+"}"),
+                "{0:15s}".format("{" + ", ".join(
+                    [str(s_) for s_ in tf_["hidden_layers"]]) + "}"),
+                "{0:10f}".format(tf_["max_diff"]),
+                "{0:10f}".format(tf_["r2"]),
+                "{0:10f}".format(tf_["mse"]),
+                "{0:10f}".format(tf_["duration"]),
+                file=f)
 
     print("Table of length {} written to file {}.".format(
         table_length, table_filename))
 
 
-def generateTFDropoutTableData(tf_data):
-    pass
+def generateTFDropoutTableData(
+        tf_data,
+        table_filename="../results/dnn_dropout_table.dat"):
+    """Generates dropout data for pgfplotstable."""
+    table_length = 0
+
+    with open(table_filename, "w") as f:
+        # header = (r"{$Optimizer$} {$Activation$} {$Layers$} "
+        #           r"{$\mathrm{max}(\varepsilon_{\mathrm{abs}}|)$} "
+        #           r"{$R^2$} {$MSE$} {$\Delta t$}")
+        header = "optimizer activation layers diff r2 mse dropout"
+        f.write(header)
+        f.write("\n")
+        for i, tf_ in enumerate(sorted(tf_data["data"],
+                                       key=lambda k: (k["optimizer"],
+                                                      k["activation"]))):
+
+            if tf_["dropout"] == 0.0:
+                continue
+
+            table_length += 1
+
+            print(
+                "{0:15s}".format(tf_["optimizer"].capitalize()),
+                "{0:15s}".format(
+                    "{"+tf_["activation"].capitalize().replace("_", " ")+"}"),
+                "{0:15s}".format("{" + ", ".join(
+                    [str(s_) for s_ in tf_["hidden_layers"]]) + "}"),
+                "{0:10f}".format(tf_["max_diff"]),
+                "{0:10f}".format(tf_["r2"]),
+                "{0:10f}".format(tf_["mse"]),
+                # "{0:10f}".format(tf_["duration"]),
+                "{0:10f}".format(tf_["dropout"]),
+                file=f)
+
+    print("Table of length {} written to file {}.".format(
+        table_length, table_filename))
 
 
 def main():
@@ -342,17 +389,17 @@ def main():
     fw_data = load_finite_difference_data(fw_data_file_folder,
                                           try_get_pickle=True)
 
-    # plotTimingFW(fw_timing_data)
+    plotTimingFW(fw_timing_data)
     # plotTimingComparison(tf_data, fw_timing_data)
 
     # plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotComparison(tf_data, fw_data)
-
-    generateTFTableData(tf_data)
     exit("COMPLETED")
 
+    generateTFTableData(tf_data)
     generateTFDropoutTableData(tf_data)
+
 
 
 if __name__ == '__main__':

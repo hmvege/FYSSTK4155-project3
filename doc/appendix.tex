@@ -1,3 +1,18 @@
 \begin{appendices}
-pass
+\section{Evaluating the performance}
+Since analytical results is achievable, we will evaulate our final results using the $R^2$ score,
+\begin{align}
+    R^2(\bm{y},\tilde{\bm{y}}) = 1 - \frac{\sum_{i=0}^{N-1}(y_i - \hat{y}_i)^2}{\sum_{i=0}^{N-1}(y_i - \bar{\bm{y}})^2}
+    \label{eq:r2}
+\end{align}
+with $\bar{\bm{y}}$ defined as 
+\begin{align*}
+    \bar{\bm{y}} = \frac{1}{N}\sum^{n-1}_{i=0} y_i
+\end{align*}
+and the MSE score,
+\begin{align}
+    \mathrm{MSE} = \frac{1}{N} \sum^{N-1}_{i=0} (y_i - \hat{y}_i)^2,
+    \label{eq:mse}
+\end{align}
+where the $\hat{y}$ is the analytical results, and $y$ is the numerical results.
 \end{appendices}
