@@ -160,8 +160,12 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 
     diff = np.abs(G_analytic - G_dnn)
 
-    r2 = r2_score(g_analytic, g_dnn)
-    mse = mean_squared_error(g_analytic, g_dnn)
+    if np.any(np.isnan(g_dnn)):
+        r2 = -1
+        mse = -1
+    else:
+        r2 = r2_score(g_analytic, g_dnn)
+        mse = mean_squared_error(g_analytic, g_dnn)
 
     duration = t1-t0
 
@@ -193,15 +197,15 @@ def run():
     dropout_rates = [0.0, 0.25, 0.5]
 
     num_hidden_neurons = [
-        [10],
-        [20],
-        [50],
-        [100],
-        [1000],
-        [10, 10],
-        [20, 20],
-        [40, 40],
-        [80, 80],
+        # [10],
+        # [20],
+        # [50],
+        # [100],
+        # [1000],
+        # [10, 10],
+        # [20, 20],
+        # [40, 40],
+        # [80, 80],
         [10, 10, 10],
         [20, 20, 20],
         [40, 40, 40],
@@ -242,7 +246,7 @@ def run():
 
     threads = 8
 
-    output_file = "../results/productionRun2_{0:d}iter.json".format(num_iter)
+    output_file = "../results/productionRun3_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
     t_np = np.linspace(t0, t1, Nt)
@@ -425,8 +429,8 @@ def task_d():
 
 def main():
     tf.reset_default_graph()
-    # run()
-    task_c()
+    run()
+    # task_c()
     # task_d()
 
 
