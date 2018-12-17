@@ -30,7 +30,8 @@ We also ran for a wide set of different layers, as seen in the following table
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
-        columns/hiddenneurons/.style={string type, column name={Hidden Layer Size}},
+        columns/layers/.style={string type, column name={Layers}},
+        columns/neurons/.style={string type, column name={Neurons}},
     ]{layers.dat}
     \label{tab:nn-layers}
 \end{table}
