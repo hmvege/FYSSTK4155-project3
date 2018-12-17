@@ -89,6 +89,9 @@ def load_finite_difference_data(folder, try_get_pickle=True):
     print("Forward Euler data retrieved.")
     return data_dict
 
+def print_savefig(figname):
+    print("Saved figure: {}".format(figname))
+
 
 def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
     """
@@ -131,7 +134,7 @@ def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
     print("Plotted {}".format(figure_name))
 
 
-def plotTimingTF(tf_data, figure_name="../fig/timing_tf.pdf"):
+def plotTimingDNN(tf_data, figure_name="../fig/timing_tf.pdf"):
     """
     Forward Euler timing data.
     step-size vs time.
@@ -191,19 +194,17 @@ def plotTimingComparison(tf_data, fw_timing_data):
 
 
 def plotFW3DData(data, analytical_y):
-    print (len(data["data"]))
-    for i, fw_ in enumerate(data["data"][2:]):
+    """
+    Plots forward Euler in 3D and compares with the analytical results.
+    """
+    for i, fw_ in enumerate(data["data"]):
         Y_fw = np.array(fw_["data"])
-        print (Y_fw.shape)
 
         # Forward Euler timing data
         # step-size vs time
         fixed_Nx = 10
         fixed_Nt = 10
         fw_values = []
-
-        if i == 1:#len(data["data"]) - 1:
-            break
 
         # continue
         x_np = np.linspace(0.0, 1.0, Y_fw.shape[1])
@@ -220,7 +221,13 @@ def plotFW3DData(data, analytical_y):
         ax.set_xlabel(r"Position $x$")
         ax.set_ylabel(r"Time $t$")
         ax.grid(True)
-        fig.savefig("../fig/fw_3d_Nt{}.pdf".format(Y_fw.shape[0]))
+        ax.view_init(elev=10., azim=45)
+        forward_euler_fig_name = \
+            "../fig/fw_3d_Nt{}.pdf".format(Y_fw.shape[0])
+        fig.savefig(forward_euler_fig_name)
+        print_savefig(forward_euler_fig_name)
+        # plt.show()
+        # exit("@230")
 
         fig = plt.figure(figsize=(10, 10))
         ax = fig.gca(projection="3d")
@@ -230,6 +237,11 @@ def plotFW3DData(data, analytical_y):
         ax.set_xlabel(r"Position $x$")
         ax.set_ylabel(r"Time $t$")
         ax.grid(True)
+        ax.view_init(elev=10., azim=45)
+        analytical_fig_name = \
+            "../fig/fw_analytical_3d_Nt{}.pdf".format(Y_fw.shape[0])
+        fig.savefig(analytical_fig_name)
+        print_savefig(analytical_fig_name)
 
         diff = np.abs(Y_analytic - Y_fw)
         fig = plt.figure(figsize=(10, 10))
@@ -240,9 +252,79 @@ def plotFW3DData(data, analytical_y):
         ax.set_xlabel(r"Position $x$")
         ax.set_ylabel(r"Time $t$")
         ax.grid(True)
-        fig.savefig("../fig/fw_ana_diff_3d_Nt{}.pdf".format(Y_fw.shape[0]))
-        plt.show()
+        ax.view_init(elev=10., azim=45)
+        fw_ana_diff_fig_name = \
+            "../fig/fw_ana_diff_3d_Nt{}.pdf".format(Y_fw.shape[0])
+        fig.savefig(fw_ana_diff_fig_name)
+        print_savefig(fw_ana_diff_fig_name)
         plt.close(fig)
+
+def plotDNN3DData(data, analytical_y):
+    """
+    Plots DNN in 3D and compares with the analytical results.
+    """
+    for i, dnn_ in enumerate(data["data"]):
+        Y_dnn = np.array(dnn_)
+
+        # Forward Euler timing data
+        # step-size vs time
+        fixed_Nx = 10
+        fixed_Nt = 10
+        dnn_values = []
+
+        # continue
+        x_np = np.linspace(0.0, 1.0, Y_dnn.shape[1])
+        t_np = np.linspace(0.0, 0.5, Y_dnn.shape[0])
+        XX, TT = np.meshgrid(x_np, t_np)
+
+        Y_analytic = np.sin(np.pi*XX)*np.exp(-np.pi*np.pi*TT)
+
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("DNN")
+        s = ax.plot_surface(XX, TT, Y_dnn, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+        ax.view_init(elev=10., azim=45)
+        forward_euler_fig_name = \
+            "../fig/dnn_3d_Nt{}.pdf".format(Y_dnn.shape[0])
+        fig.savefig(forward_euler_fig_name)
+        print_savefig(forward_euler_fig_name)
+        # plt.show()
+        # exit("@230")
+
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("Analytical solution")
+        s = ax.plot_surface(XX, TT, Y_analytic, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+        ax.view_init(elev=10., azim=45)
+        analytical_fig_name = \
+            "../fig/dnn_analytical_3d_Nt{}.pdf".format(Y_dnn.shape[0])
+        fig.savefig(analytical_fig_name)
+        print_savefig(analytical_fig_name)
+
+        diff = np.abs(Y_analytic - Y_dnn)
+        fig = plt.figure(figsize=(10, 10))
+        ax = fig.gca(projection="3d")
+        ax.set_title("Difference")
+        s = ax.plot_surface(XX, TT, diff, linewidth=0,
+                            antialiased=False, cmap=cm.viridis)
+        ax.set_xlabel(r"Position $x$")
+        ax.set_ylabel(r"Time $t$")
+        ax.grid(True)
+        ax.view_init(elev=10., azim=45)
+        dnn_ana_diff_fig_name = \
+            "../fig/dnn_ana_diff_3d_Nt{}.pdf".format(Y_dnn.shape[0])
+        fig.savefig(dnn_ana_diff_fig_name)
+        print_savefig(dnn_ana_diff_fig_name)
+        plt.close(fig)
+
 
 
 def plotFWData(data, analytical_y):
@@ -299,6 +381,9 @@ def plotFWData(data, analytical_y):
 
 
 def plotComparison(tf_data, fw_data):
+    """
+    Include 2D plots of evolution and difference.
+    """
 
     print(tf_data["data"][0].keys())
     print(tf_data["data"][0]["G_analytic"][0])
@@ -330,11 +415,11 @@ def plotComparison(tf_data, fw_data):
                         antialiased=False, cmap=cm.viridis)
     ax.set_xlabel(r"Time $t$")
     ax.set_ylabel(r"Position $x$")
-    ax.set_grid(True)
+    ax.grid(True)
     plt.show()
 
 
-def generateTFTableData(tf_data,
+def generateDNNTableData(tf_data,
                         table_filename="../results/dnn_general_table.dat"):
     """Generates data for pgfplotstable."""
     table_length = 0
@@ -371,7 +456,7 @@ def generateTFTableData(tf_data,
         table_length, table_filename))
 
 
-def generateTFDropoutTableData(
+def generateDNNDropoutTableData(
         tf_data,
         table_filename="../results/dnn_dropout_table.dat"):
     """Generates dropout data for pgfplotstable."""
@@ -409,6 +494,32 @@ def generateTFDropoutTableData(
     print("Table of length {} written to file {}.".format(
         table_length, table_filename))
 
+def plot_error_and_cost():
+    """Plots error and cost of neural network of the epochs."""
+    cost_values = np.loadtxt("cost_values.dat")
+    error_values = np.loadtxt("max_diff_values.dat")
+    epochs = np.arange(len(cost_values))
+    assert len(cost_values)==len(error_values)
+    
+    fig = plt.figure()
+    ax1 = fig.add_subplot(211)
+    ax1.semilogy(epochs, cost_values, label="Cost function")
+    ax1.set_ylabel("Cost")
+    ax1.grid(True)
+    ax1.legend()
+
+    ax2 = fig.add_subplot(212)
+    ax2.semilogy(epochs, error_values, label=r"Maximum error")
+    ax2.set_ylabel(r"$\max(\varepsilon_{\mathrm{diff}})$")
+    ax2.set_xlabel(r"Epochs")
+    ax2.grid(True)
+    ax2.legend()
+
+    figname = "../fig/cost_error.pdf"
+    fig.savefig(figname)
+    print_savefig(figname)
+
+
 
 def main():
     # Retrieving data
@@ -431,17 +542,19 @@ def main():
                                           try_get_pickle=True)
 
     # plotTimingFW(fw_timing_data)
-    # plotTimingTF(tf_timing_data)
-
+    # plotTimingDNN(tf_timing_data)
     # plotTimingComparison(tf_data, fw_timing_data)
 
-    plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
-    exit("COMPLETED")
-    plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
-    # plotComparison(tf_data, fw_data)
+    plot_error_and_cost()
 
-    generateTFTableData(tf_data)
-    generateTFDropoutTableData(tf_data)
+    exit("COMPLETED")
+    plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
+    plotDNN3DData(tf_data, tf_data["data"][0]["G_analytic"])
+    # plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
+    plotComparison(tf_data, fw_data)
+
+    generateDNNTableData(tf_data)
+    generateDNNDropoutTableData(tf_data)
 
 
 if __name__ == '__main__':

@@ -260,6 +260,7 @@ def run():
     # ]
 
     num_iter = int(10**6)  # Default should be 10^5
+    save_freq = 100
 
     # # Optimal run parameters
     # num_hidden_neurons = [
@@ -314,8 +315,8 @@ def run():
                            "\nDropout rate:        {3:2f}".format(
                                str(hidden_neurons), key_opt, key_act, dr)))
                     res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
-                                   opt, num_iter, dropout_rate=dr, freq=1000,
-                                   threads=threads)
+                                   opt, num_iter, dropout_rate=dr, 
+                                   freq=save_freq, threads=threads)
                     # exit("\n\nTEST RUN DONE\n\n")
 
                     io.write_to_json(hidden_neurons, key_opt,
