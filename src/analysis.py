@@ -184,32 +184,32 @@ def plotTimingDNN(tf_data, figure_name="../fig/timing_tf.pdf"):
     print("Plotted {}".format(figure_name))
 
 
-def plotTimingComparison(tf_data, fw_timing_data):
-    """Compares tensor flow timing data to Forward Euler data."""
-    # Forward Euler timing data
-    # step-size vs time
-    fixed_Nx = 10
-    fixed_Nt = 10
-    fw_values = []
-    for fw_ in fw_timing_data:
+# def plotTimingComparison(tf_data, fw_timing_data):
+#     """Compares tensor flow timing data to Forward Euler data."""
+#     # Forward Euler timing data
+#     # step-size vs time
+#     fixed_Nx = 10
+#     fixed_Nt = 10
+#     fw_values = []
+#     for fw_ in fw_timing_data:
 
-        # Selects only thos with a certain Nx
-        if np.abs(fw_[0] - fixed_Nx) < 1e-16:
+#         # Selects only thos with a certain Nx
+#         if np.abs(fw_[0] - fixed_Nx) < 1e-16:
 
-            # Selects only those which has a certain Ny
-            if np.abs((fw_[1] * fw_[2]) - fixed_Nt) < 1e-16:
-                fw_values.append(fw_)
+#             # Selects only those which has a certain Ny
+#             if np.abs((fw_[1] * fw_[2]) - fixed_Nt) < 1e-16:
+#                 fw_values.append(fw_)
 
-    fw_values = np.array(fw_values)
+#     fw_values = np.array(fw_values)
 
-    tf_values = []
-    for tf_ in tf_data["data"]:
-        print(tf_.keys())
-        exit(1)
+#     tf_values = []
+#     for tf_ in tf_data["data"]:
+#         print(tf_.keys())
+#         exit(1)
 
-    # fig1 = plt.figure()
-    # ax1 = fig1.add_subplot(111)
-    # ax1.plot()
+#     # fig1 = plt.figure()
+#     # ax1 = fig1.add_subplot(111)
+#     # ax1.plot()
 
 
 def plotFW3DData(data, analytical_y, output_folder="../fig/fw_3d"):
@@ -622,7 +622,8 @@ def main():
 
     plotTimingFW(fw_timing_data)
     plotTimingDNN(tf_timing_data)
-    plotTimingComparison(tf_data, fw_timing_data)
+
+    # plotTimingComparison(tf_data, fw_timing_data)
 
     generateDNNTableData(
         tf_data, optimizer="adam",
@@ -638,6 +639,8 @@ def main():
     plot_error_and_cost()
     plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
     plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
+                  output_folder="../fig/dnn_3d")
+    plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
                   output_folder="../fig/dnn_optimal_3d")
 
     plot_2D_DNN(tf_optimal_data, fw_data, "fw")
