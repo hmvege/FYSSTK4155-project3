@@ -1,11 +1,10 @@
 \section{Results}
-
-
 \subsection{Deep Neural Net}
-We will now proceed with presenting results for a deep neural net in the table \ref{tab:dnn_general_results}, put together using different hyper parameters. Combinations where put together from different amount of layers, neurons on each layer, activation functions and optimizers. The results were retrieved running $N_\mathrm{epochs}=10^5$ epochs and having a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$. To evaluate the performance we look at the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse}. The $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
+We will now proceed with presenting results for a deep neural net in the table \ref{tab:dnn_general_results}, put together using different hyper parameters. Combinations where put together from different amount of layers, neurons on each layer, activation functions and optimizers. The results were retrieved running $N_\mathrm{e}=10^5$ epochs and having a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$. To evaluate the performance we look at the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse}. The $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
+
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{epochs}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$. }
+    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.0$.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -20,10 +19,29 @@ We will now proceed with presenting results for a deep neural net in the table \
     \label{tab:dnn_general_results}
 \end{table}
 
-We also run with a dropout rates of $\epsilon_\mathrm{Dropout}=0.25, 0.5$. The results can be viewed in following table
+% We also run with a dropout rates of $\epsilon_\mathrm{Dropout}=0.25, 0.5$. The results can be viewed in following table
+% \begin{table}[h!tb]
+%     \centering
+%     \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{epochs}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.25, 0.5$.}
+%     \pgfplotstabletypeset[
+%         every head row/.style={before row=\toprule,after row=\midrule},
+%         every last row/.style={after row=\bottomrule},
+%         columns/optimizer/.style={string type, column name={Optimizer}},
+%         columns/activation/.style={string type, column name={Activation}},
+%         columns/layers/.style={string type, column name={Layers}},
+%         columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
+%         columns/r2/.style={column name=$R^2$},
+%         columns/mse/.style={sci, column name=$MSE$},
+%         columns/dropout/.style={column name=$\epsilon_\mathrm{Dropout}$}
+%     ]{../results/dnn_dropout_table.dat}
+%     \label{tab:dnn_dropout_results}
+% \end{table}
+
+From the table \ref{tab:dnn_general_results}, the results for which gave us the best $R^2$ and $MSE$ were chosen to be run for $N_\mathrm{e}10^6$ epochs. The results for this run can be seen in table \ref{tab:dnn_optimal_parameters_results}.
+
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{epochs}=10^5$, and we used a dropout rate of $\epsilon_\mathrm{Dropout}=0.25, 0.5$.}
+    \caption{Results for a DNN with a select set of hyper parameters .}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -35,5 +53,10 @@ We also run with a dropout rates of $\epsilon_\mathrm{Dropout}=0.25, 0.5$. The r
         columns/mse/.style={sci, column name=$MSE$},
         columns/dropout/.style={column name=$\epsilon_\mathrm{Dropout}$}
     ]{../results/dnn_dropout_table.dat}
-    \label{tab:dnn_dropout_results}
+    \label{tab:dnn_optimal_parameters_results}
 \end{table}
+
+\subsection{Forward Euler and finite difference}
+
+
+\subsection{Comparing DNN and Forward-Euler against the analytic solution}

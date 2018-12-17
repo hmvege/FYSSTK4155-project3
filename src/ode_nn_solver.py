@@ -133,6 +133,10 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
     config = tf.ConfigProto()
     config.intra_op_parallelism_threads = threads
 
+    # For storing function cost values during training
+    cost_values = []
+    max_diff_values = []
+
     t0 = time.time()
     # Execution phase
     with tf.Session(config=config) as sess:
@@ -141,7 +145,13 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
             sess.run(training_op)
 
             if i % freq == 0:
-                tqdm.write("Cost: {0:.8f}".format(loss.eval()))
+                cost_tmp = loss.eval()
+                tqdm.write("Cost: {0:.8f}".format(cost_tmp))
+                cost_values.append(cost_tmp)
+
+                # Temporary 
+                diff_tmp = np.max(np.abs(g_analytic.eval() - g_trial.eval()))
+                max_diff_values.append(diff_tmp)
 
         g_analytic = g_analytic.eval()
         g_dnn = g_trial.eval()
@@ -168,6 +178,11 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
         mse = mean_squared_error(g_analytic, g_dnn)
 
     duration = t1-t0
+
+    # Temporary storing cost values
+    # print (np.array(cost_values), np.array(max_diff_values))
+    np.savetxt("cost_values.dat", np.array(cost_values))
+    np.savetxt("max_diff_values.dat", np.array(max_diff_values))
 
     return G_analytic, G_dnn, diff, max_diff, r2, mse, cost, duration
 
@@ -221,11 +236,11 @@ def run():
         # [40, 40],
         # [80, 80],
         [10, 10, 10],
-        [20, 20, 20],
-        [40, 40, 40],
-        # [100, 100, 100],
-        [10, 10, 10, 10, 10],
-        [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+        # [20, 20, 20],
+        # [40, 40, 40],
+        # # [100, 100, 100],
+        # [10, 10, 10, 10, 10],
+        # [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     ]
 
     # # Future run:
@@ -244,22 +259,22 @@ def run():
     #     # [200],
     # ]
 
-    num_iter = int(10**5)  # Default should be 10^5
+    num_iter = int(10**6)  # Default should be 10^5
 
-    # Optimal run parameters
-    num_hidden_neurons = [
-        [10, 10, 10],
-        [40, 40, 40],
-        [10, 10, 10, 10, 10],
-        [50],
-        [100],
-        [1000],
-    ]
-    activation_functions = {
-        "sigmoid": tf.nn.sigmoid,
-        "tanh": tf.tanh,
-    }
-    num_iter = int(10**6) # For long runs
+    # # Optimal run parameters
+    # num_hidden_neurons = [
+    #     [10, 10, 10],
+    #     [40, 40, 40],
+    #     [10, 10, 10, 10, 10],
+    #     [50],
+    #     [100],
+    #     [1000],
+    # ]
+    # activation_functions = {
+    #     "sigmoid": tf.nn.sigmoid,
+    #     "tanh": tf.tanh,
+    # }
+    # num_iter = int(10**6) # For long runs
 
     # output_file = "../results/testRun1_{0:d}iter.json".format(num_iter)
     output_file = ("../results/OptimalParametersRun1"

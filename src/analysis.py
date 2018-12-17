@@ -191,21 +191,20 @@ def plotTimingComparison(tf_data, fw_timing_data):
 
 
 def plotFW3DData(data, analytical_y):
-    for fw_ in data["data"][-1:]:
+    print (len(data["data"]))
+    for i, fw_ in enumerate(data["data"][2:]):
+        Y_fw = np.array(fw_["data"])
+        print (Y_fw.shape)
+
         # Forward Euler timing data
         # step-size vs time
         fixed_Nx = 10
         fixed_Nt = 10
         fw_values = []
 
-        Y_fw = np.array(fw_["data"])
+        if i == 1:#len(data["data"]) - 1:
+            break
 
-        # fig, ax = plt.subplots()
-        # heatmap = ax.pcolor(Y_fw, edgecolors="k")
-        # cbar = plt.colorbar(heatmap, ax=ax)
-        # plt.show()
-        # print(Y_fw.shape)
-        # exit()
         # continue
         x_np = np.linspace(0.0, 1.0, Y_fw.shape[1])
         t_np = np.linspace(0.0, 0.5, Y_fw.shape[0])
@@ -232,7 +231,7 @@ def plotFW3DData(data, analytical_y):
         ax.set_ylabel(r"Time $t$")
         ax.grid(True)
 
-        diff = Y_analytic - Y_fw
+        diff = np.abs(Y_analytic - Y_fw)
         fig = plt.figure(figsize=(10, 10))
         ax = fig.gca(projection="3d")
         ax.set_title("Difference")
@@ -242,6 +241,7 @@ def plotFW3DData(data, analytical_y):
         ax.set_ylabel(r"Time $t$")
         ax.grid(True)
         fig.savefig("../fig/fw_ana_diff_3d_Nt{}.pdf".format(Y_fw.shape[0]))
+        plt.show()
         plt.close(fig)
 
 
@@ -435,10 +435,10 @@ def main():
 
     # plotTimingComparison(tf_data, fw_timing_data)
 
-    # plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
-    # plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
+    plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
+    exit("COMPLETED")
+    plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotComparison(tf_data, fw_data)
-    # exit("COMPLETED")
 
     generateTFTableData(tf_data)
     generateTFDropoutTableData(tf_data)

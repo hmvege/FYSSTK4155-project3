@@ -1,1 +1,36 @@
 \section{Implementation}
+The code used to run this project can be viewed at GitHub\footnote{\url{https://github.com/hmvege/FYSSTK4155-project3}}. Further, the code was mainly built using TensorFlow\cite{tensorflow2015-whitepaper}.
+
+\subsection{Neural Net setup}
+For the neural net, two different optimizers were used, Gradient Descent and the Adam optimizer\footnote{See the documentation for \href{https://www.tensorflow.org/api_docs/python/tf/train/GradientDescentOptimizer}{gradient descent} and the \href{https://www.tensorflow.org/api_docs/python/tf/train/AdamOptimizer}{Adam algorithm}\cite{kingma_adam:_2014} for more details.}. 
+
+Further, we used compared different kind of activation functions which can be seen in the following table,
+\begin{itemize}
+    \item Sigmoid
+    \item tanh
+    \item Relu
+    \item LeakyRelu
+\end{itemize}
+These is also summarized in the appendix\ref{app:act-funcs}.
+% \begin{table}[h!tb]
+%     \centering
+%     \caption{Activation functions used in the Neural Net.}
+%     \pgfplotstabletypeset[
+%         every head row/.style={before row=\toprule,after row=\midrule},
+%         every last row/.style={after row=\bottomrule},
+%         columns/actfuncs/.style={string type, column name={Activation function}}
+%     ]{activation_functions.dat}
+%     \label{tab:activation-functions}
+% \end{table}
+
+We also ran for a wide set of different layers, as seen in the following table
+\begin{table}[h!tb]
+    \centering
+    \caption{Number of neurons found in each hidden layer.}
+    \pgfplotstabletypeset[
+        every head row/.style={before row=\toprule,after row=\midrule},
+        every last row/.style={after row=\bottomrule},
+        columns/hiddenneurons/.style={string type, column name={Hidden Layer Size}},
+    ]{layers.dat}
+    \label{tab:nn-layers}
+\end{table}

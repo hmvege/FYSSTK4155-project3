@@ -15,4 +15,43 @@ and the MSE score,
     \label{eq:mse}
 \end{align}
 where the $\hat{y}$ is the analytical results, and $y$ is the numerical results.
+
+\section{Neural Net activation functions} \label{app:act-funcs}
+\subsection{Sigmoid}
+The \textbf{sigmoid} activation function is given as,
+\begin{align}
+    \sigma_\mathrm{sig} (z) = \frac{1}{1 + \e{-z}}
+    \label{eq:sigmoidal-activation}
+\end{align}
+
+\subsection{Hyperbolic tangens}
+The \textbf{hyperbolic tangens} activation function is given as
+\begin{align}
+    \sigma_\mathrm{tanh}(z) = \tanh(z)
+    \label{eq:act-tanh}
+\end{align}
+
+\subsection{Relu}
+The \textbf{relu} or rectifier activation is given as,
+\begin{align}
+    \sigma_\mathrm{relu}(z) = 
+    \begin{cases}
+        z & \text{if } z \geq 0 \\
+        0 & \text{if } z < 0 \\
+    \end{cases}
+    \label{eq:act-relu}
+\end{align}
+
+\subsection{Leaky relu}
+The \textbf{leaky relu} or rectifier activation is given as,
+\begin{align}
+    \sigma_\mathrm{relu}(z) = 
+    \begin{cases}
+        z & \text{if } z > 0 \\
+        0.01z & \text{if } z \leq 0 \\
+    \end{cases}
+    \label{eq:act-relu}
+\end{align}
+
+
 \end{appendices}
