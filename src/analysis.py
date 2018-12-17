@@ -110,14 +110,53 @@ def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
 
     fw_values = np.array(fw_values)
 
+    # print(fw_values[:, 2])
+    # print(fw_values[:, 3])
+
+    res = np.polyfit(fw_values[1:, 1][::-1], fw_values[1:, 3][::-1], 1)
+    print ("Fit parameters for Forward-Euler timing: ", res)
+
     fig1 = plt.figure()
     ax1 = fig1.add_subplot(111)
-    ax1.loglog(fw_values[:, 2], fw_values[:, 2],
-               label=r"Forward-Euler")
-    ax1.set_xlabel(r"$\alpha$")
+    ax1.loglog(fw_values[:, 1][::-1], fw_values[:, 3][::-1],
+               "o-", label=r"Forward-Euler")
+    ax1.set_xlabel(r"$N_t$")
     ax1.set_ylabel(r"$t$[s]")
     ax1.grid(True)
     ax1.legend()
+
+
+    fig1.savefig(figure_name)
+    plt.close(fig1)
+    print("Plotted {}".format(figure_name))
+
+
+def plotTimingTF(tf_data, figure_name="../fig/timing_tf.pdf"):
+    """
+    Forward Euler timing data.
+    step-size vs time.
+    """
+
+    fixed_Nx = 10
+    fixed_Nt = 10
+    tf_layers = np.empty(len(tf_data["data"]), dtype=int)
+    tf_times = np.empty(len(tf_data["data"]), dtype=float)
+    for i, tf_ in enumerate(tf_data["data"]):
+        tf_times[i] = tf_["duration"]
+        tf_layers[i] = tf_["hidden_layers"][0]
+
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot(111)
+    ax1.plot(tf_layers, tf_times,
+               "o-", label=r"DNN")
+    ax1.set_xlabel(r"Layer size")
+    ax1.set_ylabel(r"$t$[s]")
+    ax1.grid(True)
+    ax1.legend()
+
+    res = np.polyfit(tf_layers, tf_times, 1)
+    print ("Fit parameters for TensorFlow timing: ", res)
+
     fig1.savefig(figure_name)
     plt.close(fig1)
     print("Plotted {}".format(figure_name))
@@ -320,7 +359,7 @@ def generateTFTableData(tf_data,
                 "{0:15s}".format(tf_["optimizer"].capitalize()),
                 "{0:15s}".format(
                     "{"+tf_["activation"].capitalize().replace("_", " ")+"}"),
-                "{0:15s}".format("{" + ", ".join(
+                "{0:40s}".format("{" + ", ".join(
                     [str(s_) for s_ in tf_["hidden_layers"]]) + "}"),
                 "{0:10f}".format(tf_["max_diff"]),
                 "{0:10f}".format(tf_["r2"]),
@@ -380,7 +419,9 @@ def main():
     fw_timing_data = load_finite_difference_timing(timing_file)
 
     tf_file = "../results/testrun.json"
+    tf_file = "../results/productionRun3_100000iter.json"
     tf_data = load_json(tf_file)
+    tf_timing_data = load_json("../results/TimingRun1_100000iter.json")
 
     # fw_data_file_folder = ("/Users/hansmathiasmamenvege/Programming"
     #                        "/COMPHYS1/projects/project5/Diffusion/output")
@@ -389,17 +430,18 @@ def main():
     fw_data = load_finite_difference_data(fw_data_file_folder,
                                           try_get_pickle=True)
 
-    plotTimingFW(fw_timing_data)
+    # plotTimingFW(fw_timing_data)
+    # plotTimingTF(tf_timing_data)
+
     # plotTimingComparison(tf_data, fw_timing_data)
 
     # plotFW3DData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotFWData(fw_data, tf_data["data"][0]["G_analytic"])
     # plotComparison(tf_data, fw_data)
-    exit("COMPLETED")
+    # exit("COMPLETED")
 
     generateTFTableData(tf_data)
     generateTFDropoutTableData(tf_data)
-
 
 
 if __name__ == '__main__':

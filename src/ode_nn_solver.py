@@ -179,18 +179,28 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 # |_| \_\\__,_|_| |_|  \____\___/|_| |_|\__|_|  \___/|_|
 
 def run():
+    # Sets up data parameters
+    x0 = 0.0
+    L = 1.0
+    t0 = 0.0
+    t1 = 0.5  # Most of the interesting information is in the 0-0.5 area
+
+    Nx = 10
+    Nt = 10
+
+    threads = 8
 
     learning_rate = 0.01
 
     optimizers = {
-        "adam": tf.train.AdamOptimizer(),
+        "adam": tf.train.AdamOptimizer(),  # Optimum
         # "gd": tf.train.GradientDescentOptimizer(learning_rate),
     }
 
     activation_functions = {
         # "sigmoid": tf.nn.sigmoid,
         # "relu": tf.nn.relu,
-        "tanh": tf.tanh,
+        "tanh": tf.tanh,  # Optimum
         # "leaky_relu": tf.nn.leaky_relu,
     }
 
@@ -218,40 +228,42 @@ def run():
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     ]
 
-    # Future run:
-    timing_hidden_neurons = [
-        [10],
-        [20],
-        [30],
-        [40],
-        [50],
-        [60],
-        [70],
-        [80],
-        [90],
-        [100],
-    ]
-    num_hidden_neurons = timing_hidden_neurons
-
-    # Future run:
-    # optimum_layer_sizes = [
-    #     [],
+    # # Future run:
+    # num_hidden_neurons = [
+    #     [10],
+    #     [20],
+    #     [30],
+    #     [40],
+    #     [50],
+    #     [60],
+    #     [70],
+    #     [80],
+    #     [90],
+    #     [100],
+    #     # [150],
+    #     # [200],
     # ]
 
-    # Sets up data parameters
-    x0 = 0.0
-    L = 1.0
-    t0 = 0.0
-    t1 = 0.5  # Most of the interesting information is in the 0-0.5 area
+    num_iter = int(10**5)  # Default should be 10^5
 
-    Nx = 10
-    Nt = 10
+    # Optimal run parameters
+    num_hidden_neurons = [
+        [10, 10, 10],
+        [40, 40, 40],
+        [10, 10, 10, 10, 10],
+        [50],
+        [100],
+        [1000],
+    ]
+    activation_functions = {
+        "sigmoid": tf.nn.sigmoid,
+        "tanh": tf.tanh,
+    }
+    num_iter = int(10**6) # For long runs
 
-    num_iter = 100000  # Default should be 10^5
-
-    threads = 8
-
-    output_file = "../results/testRun1_{0:d}iter.json".format(num_iter)
+    # output_file = "../results/testRun1_{0:d}iter.json".format(num_iter)
+    output_file = ("../results/OptimalParametersRun1"
+                   "_{0:d}iter.json".format(num_iter))
     # output_file = "../results/TimingRun1_{0:d}iter.json".format(num_iter)
     # output_file = "../results/productionRun3_{0:d}iter.json".format(num_iter)
 
