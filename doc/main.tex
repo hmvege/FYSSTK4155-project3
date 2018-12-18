@@ -73,20 +73,10 @@
 \maketitle
 
 \begin{abstract}
-A comparison between Forward Euler and Deep Neural Networks, more specifically as multilayer perceptron has been made. From investigating many different combinations of hyper parameters and two different optimizers as seen in table \ref{tab:dnn_general_results_gd} and \ref{tab:dnn_general_results_adam}, we selected the most promising results which we saw in table \ref{tab:dnn_optimal_results_adam}. 
-
-We immediately saw that Leaky Relu and Relu performed poorly when put up against Sigmoidal and $\tanh$ activation, and decided to drop those in any further examinations.
-
-While many of the results found where highly promising, we decided to move on with using the Adam optimizer, one hidden layer with 50 neurons and the $\tanh$ activation function. From this we managed to have the maximum difference drop to $\max(\varepsilon_\mathrm{abs})=4.35\cdot 10^{-5}$, achieve a $R^2 \approx 1.0$ and MSE score of $7.27\cdot 10^{-11}$ and get a cost of $\mathcal{C} = 6.74 \cdot 10^{-7}$. The result of this can be seen in figure \ref{fig:3d-dnn-comparison-plots}, with the absolute error can be seen in \ref{fig:dnn-ana-diff-3d}.
-
-We also investigated the time for different single hidden layer sizes in \ref{fig:tf-timing} and the time dependence on the number of integration points in the temporal direction $N_t$ in figure \ref{fig:fw-timing}. What we found was that already for a simple single hidden layer with 10 neurons and $10^5$ epochs, we use around 15 seconds, with this climbing steeply to well above 1000 seconds for 1000 neurons. For Forward-Euler the accuracy is mainly dependent on the number of integration points, while for the DNN we are heavily reliant on several factors such as layer size and number of epochs. This makes a direct time comparison difficult, but from what we can see the major drawback with a DNN is the time it takes to train.
-
-Taking time into consideration, the poor performance of Forward-Euler in figure \ref{fig:3d-fw-comparison-plots} and for a higher number of integration points in figure \ref{fig:3d-fw-comparison-plots-spatial-highres} is slightly misleading. While the results for the Neural Net is impressive considering very little work is need to set up such a solver, it's time usage is a drawback.
-
+A comparison between a finite difference method of Forward Euler and Deep Neural Networks is made in solving a partial differential equation. The effectiveness of different combinations of hyper parameters is measured such as different layer geometries. We find that a sigmoidal activation and $\tanh$ activation function severely outperforms Leaky Relu and Relu. We also tested gradient descent and the Adam optimizer. The most effective combination found turned out to use the Adam optimizer and have one layer of $50$ neurons and $\tanh$ as its activation function. This resulted in a maximum difference of $\max(\varepsilon_\mathrm{abs})=4.35\cdot 10^{-5}$ and a cost of $\mathcal{C} = 6.74 \cdot 10^{-7}$. When comparing with the analytical solution a $R^2 \approx 1.0$ and MSE score of $7.27\cdot 10^{-11}$ is found, contrasting the results from Forward Euler of $N_x=100$ and $N_t=10000$ of $R^2=0.88$ and $MSE=1.01\cdot 10^{-5}$.
 \end{abstract}
 
 % \tableofcontents
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{introduction.tex}
