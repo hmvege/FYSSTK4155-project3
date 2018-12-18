@@ -10,9 +10,9 @@ import pickle
 from matplotlib import cm, rc, rcParams
 from mpl_toolkits.mplot3d import axes3d
 
-# rc("text", usetex=True)
-# rc("font", **{"family": "sans-serif", "serif": ["Computer Modern"]})
-# rcParams["font.family"] += ["serif"]
+rc("text", usetex=True)
+rc("font", **{"family": "sans-serif", "serif": ["Computer Modern"]})
+rcParams["font.family"] += ["serif"]
 
 
 def f_analytical(x, t):
@@ -588,8 +588,9 @@ def generateDNNDropoutTableData(
 
 def plot_error_and_cost():
     """Plots error and cost of neural network of the epochs."""
-    cost_values = np.loadtxt("../results/cost_values.dat")
-    error_values = np.loadtxt("../results/max_diff_values.dat")
+    cost_values = np.loadtxt("../results/cost_values_neurons50_layers1.dat")
+    error_values = np.loadtxt(
+        "../results/max_diff_values_neurons50_layers1.dat")
     epochs = np.arange(len(cost_values))*100
     assert len(cost_values) == len(error_values)
 
@@ -655,12 +656,13 @@ def main():
         tf_optimal_data, optimizer="adam",
         table_filename="../results/dnn_optimal_table_adam.dat")
 
-    # plot_error_and_cost()
-    # plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
-    # plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
-    #               output_folder="../fig/dnn_3d")
-    # plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
-    #               output_folder="../fig/dnn_optimal_3d")
+    plot_error_and_cost()
+
+    plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
+    plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
+                  output_folder="../fig/dnn_3d")
+    plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
+                  output_folder="../fig/dnn_optimal_3d")
 
     plot_2D_DNN(tf_optimal_data, fw_data, "fw")
     plot_2D_DNN(tf_optimal_data, fw_data, "ana_fw")

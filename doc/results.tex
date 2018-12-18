@@ -84,10 +84,55 @@ The cost and error of a run with three layers and 10 neurons in each layers run 
     \label{fig:cost-error}
 \end{figure}
 
-\subsection{Forward Euler and finite difference}
+% \subsection{Forward Euler and finite difference}
 
 
 \subsection{Comparing DNN and Forward-Euler against the analytic solution}
-From the table \ref{tab:dnn_optimal_results_adam}, we will use the Adam optimizer and a single layer of 50 neurons together with the $\tanh$ activation function in further analysis and comparison against the Forward-Euler finite difference method.
+From the table \ref{tab:dnn_optimal_results_adam}, we will use the Adam optimizer and a single layer of 50 neurons together with the $\tanh$ activation function in further analysis and comparison against the Forward-Euler finite difference method. The Forward-Euler method was run with $N_x=10$ and $N_t=5000$, and a $\alpha=\Delta t / \Delta x^2=0.001$ in order to safely maintain the stability condition.
+
+In figure \ref{fig:analytical-solution} we see the analytical solution as given for by \eqref{eq:pde-analytical-solution} for $N_t=10$ and $N_x=10$.
+\begin{figure}[h!tb]
+    \centering
+    \includegraphics[scale=1.0]{../fig/dnn_optimal_3d/analytical_3d_Nt10_Nlayers1_neurons1000_acttanh_optadam_dropout0_0.pdf}
+    \caption{The analytical solution as given by \eqref{eq:pde-analytical-solution} for $N_t=10$ and $N_x=10$.}
+    \label{fig:analytical-solution}
+\end{figure}
+
+\begin{figure}[h!tb]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.5]{../fig/dnn_optimal_3d/dnn_3d_Nt10_Nlayers1_neurons50_acttanh_optadam_dropout0_0.pdf}
+        \caption{Neural Network.}
+        \label{fig:neural-net-optimal-3d}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.5]{../fig/dnn_optimal_3d/dnn_ana_diff_3d_Nt10_Nlayers1_neurons50_acttanh_optadam_dropout0_0.pdf}
+        \caption{Absolute difference between neural network and analytical results.}
+        \label{fig:dnn-ana-diff-3d}
+    \end{subfigure}
+    \caption{The neural net results\ref{fig:neural-net-optimal-3d} and the absolute difference between the neural net and the analytical results\ref{fig:dnn-ana-diff-3d}. Results run for $N_x=10$ and $N_t=10$, with the Adam optimizer, one hidden layer of 50 neurons and $\tanh$ as activation function.}
+    \label{fig:3d-dnn-comparison-plots}
+\end{figure}
+
+\begin{figure}[h!tb]
+    \centering
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.5]{../fig/fw_3d/analytical_3d_Nt5000.pdf}
+        \caption{Forward-Euler.}
+        \label{fig:fw-3d}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \centering
+        \includegraphics[scale=0.5]{../fig/fw_3d/fw_ana_diff_3d_Nt5000.pdf}
+        \caption{Absolute error between analytical and Forward Euler.}
+        \label{fig:fw-ana-diff-3d}
+    \end{subfigure}
+    \caption{The forward Euler results \ref{fig:fw-3d}, and the absolute error between analytical and Forward Euler\ref{fig:fw-ana-diff-3d}. The Forward Euler was run with $N_x=10$ and $N_t=5000$ and $\alpha=\Delta t / \Delta x^2=0.001$.}
+    \label{fig:3d-fw-comparison-plots}
+\end{figure}
+
 
 \subsection{Timing}

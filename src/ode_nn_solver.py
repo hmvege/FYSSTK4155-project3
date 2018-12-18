@@ -47,6 +47,8 @@ class DataWriter:
         with open(self.filename, "w+") as json_file:
             json.dump(json_dict, json_file, indent=4)
 
+            print("Dumped data to json: {}".format(self.filename))
+
 #  _____                          __ _                  ____
 # |_   _|__ _ __  ___  ___  _ __ / _| | _____      __  / ___|___  _ __ ___
 #   | |/ _ \ '_ \/ __|/ _ \| '__| |_| |/ _ \ \ /\ / / | |   / _ \| '__/ _ \
@@ -152,7 +154,8 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 
                 if store_error_and_cost:
                     cost_values.append(cost_tmp)
-                    diff_tmp = np.max(np.abs(g_analytic.eval() - g_trial.eval()))
+                    diff_tmp = np.max(
+                        np.abs(g_analytic.eval() - g_trial.eval()))
                     max_diff_values.append(diff_tmp)
 
         g_analytic = g_analytic.eval()
@@ -183,12 +186,18 @@ def tf_core(X, T, num_hidden_neurons, hidden_activation_function,
 
     if store_error_and_cost:
         # Storing cost values
-        np.savetxt("cost_values_neurons{0:d}_layers{1:d}_act{2:s}_opt{3:s}.dat".format(
-            num_hidden_neurons[0], len(num_hidden_neurons), key_act, key_opt), 
-            np.array(cost_values))
-        np.savetxt("max_diff_values_neurons{0:d}_layers{1:d}_act{2:s}_opt{3:s}.dat".format(
-            num_hidden_neurons[0], len(num_hidden_neurons), key_act, key_opt), 
-            np.array(max_diff_values))
+        cost_values_fname = ("../results/cost_values_neurons{0:d}_layers{1:d}"
+                             ".dat".format(num_hidden_neurons[0],
+                                           len(num_hidden_neurons)))
+        np.savetxt(cost_values_fname,
+                   np.array(cost_values))
+        max_diff_fname = ("../results/max_diff_values_neurons{0:d}_layers{1:d}"
+                          ".dat".format(num_hidden_neurons[0],
+                                        len(num_hidden_neurons)))
+        np.savetxt(max_diff_fname, np.array(max_diff_values))
+
+        print("{} written.".format(cost_values_fname))
+        print("{} written.".format(max_diff_fname))
 
     return G_analytic, G_dnn, diff, max_diff, r2, mse, cost, duration
 
@@ -265,7 +274,7 @@ def run():
     #     # [200],
     # ]
 
-    num_iter = int(10**3)  # Default should be 10^5
+    num_iter = int(10**6)  # Default should be 10^5
     save_freq = 100
     store_error_and_cost = True
 
@@ -324,7 +333,7 @@ def run():
                            "\nDropout rate:        {3:2f}".format(
                                str(hidden_neurons), key_opt, key_act, dr)))
                     res_ = tf_core(X.copy(), T.copy(), hidden_neurons, act,
-                                   opt, num_iter, dropout_rate=dr, 
+                                   opt, num_iter, dropout_rate=dr,
                                    freq=save_freq, threads=threads,
                                    store_error_and_cost=store_error_and_cost)
                     # exit("\n\nTEST RUN DONE\n\n")
