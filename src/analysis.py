@@ -7,6 +7,8 @@ import pickle
 
 # from tqdm import tqdm, trange
 
+from sklearn.metrics import r2_score, mean_squared_error
+
 from matplotlib import cm, rc, rcParams
 from mpl_toolkits.mplot3d import axes3d
 
@@ -118,6 +120,7 @@ def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
     Forward Euler timing data.
     step-size vs time.
     """
+    fontsize = 16
 
     fixed_Nx = 10
     fixed_Nt = 10
@@ -133,20 +136,27 @@ def plotTimingFW(fw_timing_data, figure_name="../fig/timing_fw.pdf"):
 
     fw_values = np.array(fw_values)
 
-    # print(fw_values[:, 2])
-    # print(fw_values[:, 3])
+    fw_layers = fw_values[:, 1]
+    fw_times = fw_values[:, 3]
 
-    res = np.polyfit(fw_values[1:, 1][::-1], fw_values[1:, 3][::-1], 1)
+    # print(fw_layers)
+    # print(fw_times)
+
+    res = np.polyfit(np.log(fw_layers), np.log(fw_times), 1)
+    # res = np.polyfit(fw_layers, fw_times, 1)
+    _x = np.logspace(2, 9, 8)
+    # print(np.log(np.polyval(res, _x)))
+
     print("Fit parameters for Forward-Euler timing: ", res)
 
     fig1 = plt.figure()
     ax1 = fig1.add_subplot(111)
-    ax1.loglog(fw_values[:, 1][::-1], fw_values[:, 3][::-1],
-               "o-", label=r"Forward-Euler")
-    ax1.set_xlabel(r"$N_t$")
-    ax1.set_ylabel(r"$t$[s]")
+    ax1.loglog(fw_layers, fw_times, "o-", label=r"Forward-Euler")
+    # ax1.loglog(_x, np.log(np.polyval(res, _x)))
+    ax1.set_xlabel(r"$N_t$", fontsize=fontsize)
+    ax1.set_ylabel(r"$t$[s]", fontsize=fontsize)
     ax1.grid(True)
-    ax1.legend()
+    ax1.legend(fontsize=fontsize)
 
     fig1.savefig(figure_name)
     plt.close(fig1)
@@ -158,23 +168,26 @@ def plotTimingDNN(tf_data, figure_name="../fig/timing_tf.pdf"):
     Forward Euler timing data.
     step-size vs time.
     """
+    fontsize = 16
 
     fixed_Nx = 10
     fixed_Nt = 10
     tf_layers = np.empty(len(tf_data["data"]), dtype=int)
     tf_times = np.empty(len(tf_data["data"]), dtype=float)
     for i, tf_ in enumerate(tf_data["data"]):
-        tf_times[i] = tf_["duration"]
         tf_layers[i] = tf_["hidden_layers"][0]
+        tf_times[i] = tf_["duration"]
+
+    # print(tf_layers)
+    # print(tf_times)
 
     fig1 = plt.figure()
     ax1 = fig1.add_subplot(111)
-    ax1.plot(tf_layers, tf_times,
-             "o-", label=r"DNN")
-    ax1.set_xlabel(r"Layer size")
-    ax1.set_ylabel(r"$t$[s]")
+    ax1.loglog(tf_layers, tf_times, "o-", label=r"DNN")
+    ax1.set_xlabel(r"Layer size", fontsize=fontsize)
+    ax1.set_ylabel(r"$t$[s]", fontsize=fontsize)
     ax1.grid(True)
-    ax1.legend()
+    ax1.legend(fontsize=fontsize)
 
     res = np.polyfit(tf_layers, tf_times, 1)
     print("Fit parameters for TensorFlow timing: ", res)
@@ -218,21 +231,26 @@ def plotFW3DData(data, analytical_y, output_folder="../fig/fw_3d"):
     """
     create_folder(output_folder)
 
+    fontsize = 18
+
     for i, fw_ in enumerate(data["data"]):
         Y_fw = np.array(fw_["data"])
 
-        if Y_fw.shape[0] > 10000 or Y_fw.shape[1] > 500:
+        if Y_fw.shape[0] > 10000:
             continue
+
+        # if Y_fw.shape[1] > 500:
+        #     continue
 
         # Forward Euler timing data
         # step-size vs time
-        fixed_Nx = 10
-        fixed_Nt = 10
         fw_values = []
 
+        Nt, Nx = Y_fw.shape
+
         # continue
-        x_np = np.linspace(0.0, 1.0, Y_fw.shape[1])
-        t_np = np.linspace(0.0, 0.5, Y_fw.shape[0])
+        x_np = np.linspace(0.0, 1.0, Nx)
+        t_np = np.linspace(0.0, 0.5, Nt)
         XX, TT = np.meshgrid(x_np, t_np)
 
         Y_analytic = np.sin(np.pi*XX)*np.exp(-np.pi*np.pi*TT)
@@ -242,13 +260,18 @@ def plotFW3DData(data, analytical_y, output_folder="../fig/fw_3d"):
         ax.set_title("Forward-Euler")
         s = ax.plot_surface(XX, TT, Y_fw, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         forward_euler_fig_name = generate_figure_name(
-            "fw_3d", output_folder, Nt=Y_fw.shape[0])
-        fig.savefig(forward_euler_fig_name)
+            "fw_3d", output_folder, Nt=Nt, Nx=Nx)
+        if Nt*Nx >= 10000:
+            forward_euler_fig_name = forward_euler_fig_name.replace("pdf", "png")
+            fig.savefig(forward_euler_fig_name, dpi=350)
+        else:
+            fig.savefig(forward_euler_fig_name)
         print_savefig(forward_euler_fig_name)
         plt.close(fig)
 
@@ -257,13 +280,18 @@ def plotFW3DData(data, analytical_y, output_folder="../fig/fw_3d"):
         ax.set_title("Analytical solution")
         s = ax.plot_surface(XX, TT, Y_analytic, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         analytical_fig_name = generate_figure_name(
-            "analytical_3d", output_folder, Nt=Y_fw.shape[0])
-        fig.savefig(analytical_fig_name)
+            "analytical_3d", output_folder, Nt=Nt, Nx=Nx)
+        if Nt*Nx >= 10000:
+            analytical_fig_name = analytical_fig_name.replace("pdf", "png")
+            fig.savefig(analytical_fig_name, dpi=350)
+        else:
+            fig.savefig(analytical_fig_name)
         print_savefig(analytical_fig_name)
         plt.close(fig)
 
@@ -273,15 +301,26 @@ def plotFW3DData(data, analytical_y, output_folder="../fig/fw_3d"):
         ax.set_title("Difference")
         s = ax.plot_surface(XX, TT, diff, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         fw_ana_diff_fig_name = generate_figure_name(
-            "fw_ana_diff_3d", output_folder, Nt=Y_fw.shape[0])
-        fig.savefig(fw_ana_diff_fig_name)
+            "fw_ana_diff_3d", output_folder,Nt=Nt, Nx=Nx)
+        if Nt*Nx >= 10000:
+            fw_ana_diff_fig_name = fw_ana_diff_fig_name.replace("pdf", "png")
+            fig.savefig(fw_ana_diff_fig_name, dpi=350)
+        else:
+            fig.savefig(fw_ana_diff_fig_name)
         print_savefig(fw_ana_diff_fig_name)
         plt.close(fig)
+
+        print(fw_["Nt"], fw_["Nx"])
+        print(
+            "Forward-Euler: Nt: {0:d} Nx: {1:d}".format(fw_["Nt"], fw_["Nx"]))
+        print("R2 score: ", r2_score(Y_analytic, Y_fw))
+        print("MSE: ", mean_squared_error(Y_analytic, Y_fw))
 
 
 def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
@@ -305,6 +344,8 @@ def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
         fixed_Nt = 10
         dnn_values = []
 
+        fontsize = 16
+
         # continue
         x_np = np.linspace(0.0, 1.0, Y_dnn.shape[1])
         t_np = np.linspace(0.0, 0.5, Y_dnn.shape[0])
@@ -317,8 +358,9 @@ def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
         ax.set_title("DNN")
         s = ax.plot_surface(XX, TT, Y_dnn, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         dnn_fig_name = generate_figure_name(
@@ -340,8 +382,9 @@ def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
         ax.set_title("Analytical solution")
         s = ax.plot_surface(XX, TT, Y_analytic, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         analytical_fig_name = generate_figure_name(
@@ -364,8 +407,9 @@ def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
         ax.set_title("Difference")
         s = ax.plot_surface(XX, TT, diff, linewidth=0,
                             antialiased=False, cmap=cm.viridis)
-        ax.set_xlabel(r"Position $x$")
-        ax.set_ylabel(r"Time $t$")
+        ax.set_xlabel(r"Position $x$", fontsize=fontsize)
+        ax.set_ylabel(r"Time $t$", fontsize=fontsize)
+        ax.set_zlabel(r"$u(x,t)$", fontsize=fontsize)
         ax.grid(True)
         ax.view_init(elev=10., azim=45)
         dnn_ana_diff_fig_name = generate_figure_name(
@@ -394,7 +438,11 @@ def plot_2D_DNN(tf_data, fw_data, plot_value_name,
     create_folder(output_folder)
 
     # Forward Euler results for Nt = 5000
-    fw_selected = fw_data["data"][1]
+    # for i in fw_data["data"]:
+    #     print (i["Nt"])
+    fw_selected = fw_data["data"][0]
+    print(fw_selected["Nx"], fw_selected["Nt"])
+    exit(1)
 
     # Selects data
     for tf_ in tf_data["data"]:
@@ -466,13 +514,15 @@ def plot_2D_DNN(tf_data, fw_data, plot_value_name,
 
         elif plot_value_name == "fw_vs_ana":
             # Difference FW-Analytical
-            ax.plot(x_fw, np.abs(y_fw[int(t*Nt_fw), :] - f_analytical(x_fw, t)),
+            ax.plot(x_fw,
+                    np.abs(y_fw[int(t*Nt_fw), :] - f_analytical(x_fw, t)),
                     label=r"$t={0:.1f}$".format(t))
 
         elif plot_value_name == "dnn_vs_ana":
             # Difference DNN-Analytical
             t_slices = int(t*10)
-            ax.plot(x_dnn, np.abs(y_dnn[t_slices, :] - y_ana_dnn[t_slices, :]),
+            ax.plot(x_dnn,
+                    np.abs(y_dnn[t_slices, :] - y_ana_dnn[t_slices, :]),
                     label=r"$t={0:.1f}$".format(t))
         else:
             raise UserWarning("Bad usage")
@@ -628,6 +678,7 @@ def main():
     tf_file = "../results/testrun.json"
     tf_file = "../results/productionRun3_100000iter.json"
     tf_data = load_json(tf_file)
+    # tf_timing_data = load_json("../results/TimingRun0_100000iter.json")
     tf_timing_data = load_json("../results/TimingRun1_100000iter.json")
 
     tf_optimal_fpath = "../results/OptimalParametersRun1_1000000iter.json"
@@ -640,38 +691,38 @@ def main():
     fw_data = load_finite_difference_data(fw_data_file_folder,
                                           try_get_pickle=True)
 
-    plotTimingFW(fw_timing_data)
-    plotTimingDNN(tf_timing_data)
+    # plotTimingFW(fw_timing_data)
+    # plotTimingDNN(tf_timing_data)
 
-    plotTimingComparison(tf_data, fw_timing_data)
+    # # plotTimingComparison(tf_data, fw_timing_data)
 
-    generateDNNTableData(
-        tf_data, optimizer="adam",
-        table_filename="../results/dnn_general_table_adam.dat")
-    generateDNNTableData(
-        tf_data, optimizer="gd",
-        table_filename="../results/dnn_general_table_gd.dat")
-    generateDNNDropoutTableData(tf_data)
+    # generateDNNTableData(
+    #     tf_data, optimizer="adam",
+    #     table_filename="../results/dnn_general_table_adam.dat")
+    # generateDNNTableData(
+    #     tf_data, optimizer="gd",
+    #     table_filename="../results/dnn_general_table_gd.dat")
+    # generateDNNDropoutTableData(tf_data)
     generateDNNTableData(
         tf_optimal_data, optimizer="adam",
         table_filename="../results/dnn_optimal_table_adam.dat")
 
-    plot_error_and_cost()
+    # plot_error_and_cost()
 
-    plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
-    plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
-                  output_folder="../fig/dnn_3d")
-    plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
-                  output_folder="../fig/dnn_optimal_3d")
+    # plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
+    # plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
+    #               output_folder="../fig/dnn_3d")
+    # plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
+    #               output_folder="../fig/dnn_optimal_3d")
 
-    plot_2D_DNN(tf_optimal_data, fw_data, "fw")
-    plot_2D_DNN(tf_optimal_data, fw_data, "ana_fw")
-    plot_2D_DNN(tf_optimal_data, fw_data, "fw_vs_ana")
-    plot_2D_DNN(tf_optimal_data, fw_data, "ana_dnn")
-    plot_2D_DNN(tf_optimal_data, fw_data, "dnn")
-    plot_2D_DNN(tf_optimal_data, fw_data, "dnn_vs_ana")
-    plot_2D_DNN(tf_optimal_data, fw_data, "fw_and_ana")
-    plot_2D_DNN(tf_optimal_data, fw_data, "dnn_and_ana")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "fw")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "ana_fw")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "fw_vs_ana")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "ana_dnn")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "dnn")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "dnn_vs_ana")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "fw_and_ana")
+    # plot_2D_DNN(tf_optimal_data, fw_data, "dnn_and_ana")
 
     print("**************** COMPLETED ****************")
 

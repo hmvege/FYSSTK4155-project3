@@ -258,24 +258,24 @@ def run():
         # [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
     ]
 
-    # # Future run:
-    # num_hidden_neurons = [
-    #     [10],
-    #     [20],
-    #     [30],
-    #     [40],
-    #     [50],
-    #     [60],
-    #     [70],
-    #     [80],
-    #     [90],
-    #     [100],
-    #     # [150],
-    #     # [200],
-    # ]
+    # Future run:
+    num_hidden_neurons = [
+        [10],
+        [20],
+        [30],
+        [40],
+        [50],
+        [60],
+        [70],
+        [80],
+        [90],
+        [100],
+        [500],
+        [1000],
+    ]
 
-    num_iter = int(10**6)  # Default should be 10^5
-    save_freq = 100
+    num_iter = int(10**5)  # Default should be 10^5
+    save_freq = 10000
     store_error_and_cost = True
 
     # # Optimal run parameters
@@ -293,12 +293,12 @@ def run():
     # }
     # num_iter = int(10**6) # For long runs
 
-    output_file = ("../results/ErrorEvolutionRun"
-                   "_{0:d}iter.json".format(num_iter))
+    # output_file = ("../results/ErrorEvolutionRun"
+    #                "_{0:d}iter.json".format(num_iter))
     # output_file = "../results/testRun1_{0:d}iter.json".format(num_iter)
     # output_file = ("../results/OptimalParametersRun1"
     #                "_{0:d}iter.json".format(num_iter))
-    # output_file = "../results/TimingRun1_{0:d}iter.json".format(num_iter)
+    output_file = "../results/TimingRun1_{0:d}iter.json".format(num_iter)
     # output_file = "../results/productionRun3_{0:d}iter.json".format(num_iter)
 
     x_np = np.linspace(x0, L, Nx)
