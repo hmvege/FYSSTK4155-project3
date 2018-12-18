@@ -385,7 +385,7 @@ def plotDNN3DData(data, analytical_y, output_folder="../fig/dnn_3d"):
 
 def plot_2D_DNN(tf_data, fw_data, plot_value_name,
                 activation="tanh",
-                hidden_layers=[100],
+                hidden_layers=[50],
                 time_slices=[0.0, 0.2, 0.4]):
     """
     Include 2D plots of evolution and difference.
@@ -446,22 +446,41 @@ def plot_2D_DNN(tf_data, fw_data, plot_value_name,
             ax.plot(x_fw, y_fw[int(t*Nt_fw), :],
                     label=r"FW $t={0:.1f}$".format(t))
 
+        elif plot_value_name == "fw_and_ana":
+            # FW results
+            ax.plot(x_fw, y_fw[int(t*Nt_fw), :],
+                    label=r"FW $t={0:.1f}$".format(t))
+
+            # Analytical results
+            ax.plot(x_fw, f_analytical(x_fw, t),
+                    ls="--", label=r"Analytical $t={0:.1f}$".format(t))
+
+        elif plot_value_name == "dnn_and_ana":
+            # DNN results
+            ax.plot(x_dnn, y_dnn[int(t*10), :],
+                    label=r"DNN $t={0:.1f}$".format(t))
+
+            # Analytical results
+            ax.plot(x_dnn, y_ana_dnn[int(t*10), :],
+                    ls="--", label=r"Analytical $t={0:.1f}$".format(t))
+
         elif plot_value_name == "fw_vs_ana":
             # Difference FW-Analytical
-            ax.plot(x_fw, y_fw[int(t*Nt_fw), :] - f_analytical(x_fw, t),
+            ax.plot(x_fw, np.abs(y_fw[int(t*Nt_fw), :] - f_analytical(x_fw, t)),
                     label=r"$t={0:.1f}$".format(t))
 
         elif plot_value_name == "dnn_vs_ana":
             # Difference DNN-Analytical
             t_slices = int(t*10)
-            ax.plot(x_dnn, y_dnn[t_slices, :] - y_ana_dnn[t_slices, :],
+            ax.plot(x_dnn, np.abs(y_dnn[t_slices, :] - y_ana_dnn[t_slices, :]),
                     label=r"$t={0:.1f}$".format(t))
         else:
             raise UserWarning("Bad usage")
 
     ax.set_xlabel(r"$x$")
     ax.set_ylabel(r"$u(t,x)$")
-    ax.legend()
+    ax.grid(True)
+    ax.legend(fontsize=8)
     figname = generate_figure_name(
         "dnn_time_slices_2d", output_folder,
         Nlayers=Nlayers,
@@ -516,9 +535,9 @@ def generateDNNTableData(
                 #     [str(s_) for s_ in tf_["hidden_layers"]]) + "}"),
                 "{0:10d}".format(len(tf_["hidden_layers"])),
                 "{0:10d}".format(tf_["hidden_layers"][0]),
-                "{0:10f}".format(tf_["max_diff"]),
-                "{0:10f}".format(tf_["r2"]),
-                "{0:10f}".format(tf_["mse"]),
+                "{0:20.16f}".format(tf_["max_diff"]),
+                "{0:20.16f}".format(tf_["r2"]),
+                "{0:20.16f}".format(tf_["mse"]),
                 # "{0:10f}".format(tf_["duration"]),
                 file=f)
 
@@ -556,11 +575,11 @@ def generateDNNDropoutTableData(
                 #     [str(s_) for s_ in tf_["hidden_layers"]]) + "}"),
                 "{0:10d}".format(len(tf_["hidden_layers"])),
                 "{0:10d}".format(tf_["hidden_layers"][0]),
-                "{0:10f}".format(tf_["max_diff"]),
-                "{0:10f}".format(tf_["r2"]),
-                "{0:10f}".format(tf_["mse"]),
+                "{0:20.16f}".format(tf_["max_diff"]),
+                "{0:20.16f}".format(tf_["r2"]),
+                "{0:20.16f}".format(tf_["mse"]),
                 # "{0:10f}".format(tf_["duration"]),
-                "{0:10f}".format(tf_["dropout"]),
+                "{0:20.16f}".format(tf_["dropout"]),
                 file=f)
 
     print("Table of length {} written to file {}.".format(
@@ -620,8 +639,8 @@ def main():
     fw_data = load_finite_difference_data(fw_data_file_folder,
                                           try_get_pickle=True)
 
-    plotTimingFW(fw_timing_data)
-    plotTimingDNN(tf_timing_data)
+    # plotTimingFW(fw_timing_data)
+    # plotTimingDNN(tf_timing_data)
 
     # plotTimingComparison(tf_data, fw_timing_data)
 
@@ -636,12 +655,12 @@ def main():
         tf_optimal_data, optimizer="adam",
         table_filename="../results/dnn_optimal_table_adam.dat")
 
-    plot_error_and_cost()
-    plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
-    plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
-                  output_folder="../fig/dnn_3d")
-    plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
-                  output_folder="../fig/dnn_optimal_3d")
+    # plot_error_and_cost()
+    # plotFW3DData(fw_data, tf_optimal_data["data"][0]["G_analytic"])
+    # plotDNN3DData(tf_data, tf_optimal_data["data"][0]["G_analytic"],
+    #               output_folder="../fig/dnn_3d")
+    # plotDNN3DData(tf_optimal_data, tf_optimal_data["data"][0]["G_analytic"],
+    #               output_folder="../fig/dnn_optimal_3d")
 
     plot_2D_DNN(tf_optimal_data, fw_data, "fw")
     plot_2D_DNN(tf_optimal_data, fw_data, "ana_fw")
@@ -649,6 +668,8 @@ def main():
     plot_2D_DNN(tf_optimal_data, fw_data, "ana_dnn")
     plot_2D_DNN(tf_optimal_data, fw_data, "dnn")
     plot_2D_DNN(tf_optimal_data, fw_data, "dnn_vs_ana")
+    plot_2D_DNN(tf_optimal_data, fw_data, "fw_and_ana")
+    plot_2D_DNN(tf_optimal_data, fw_data, "dnn_and_ana")
 
     exit("COMPLETED")
 

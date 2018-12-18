@@ -3,7 +3,7 @@
 We will now proceed with presenting results for a deep neural net using the Gradient Descent optimizer in table \ref{tab:dnn_general_results_gd}, put together using different hyper parameters. Similar hyper parameters but with the Adam optimizer can be viewed in the table \ref{tab:dnn_general_results_adam}. Combinations where put together from different amount of layers, neurons on each layer, activation functions and optimizers. The results were retrieved running $N_\mathrm{e}=10^5$ epochs. To evaluate the performance we look at the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse}. The $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with the gradient descent optimizer.}
+    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with \textit{gradient descent} as optimizer.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -12,7 +12,7 @@ We will now proceed with presenting results for a deep neural net using the Grad
         columns/layers/.style={column name={Layers}},
         columns/neurons/.style={column name={Neurons}},
         columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
-        columns/r2/.style={column name=$R^2$},
+        columns/r2/.style={sci, column name=$R^2$},
         columns/mse/.style={sci, column name=$MSE$},
         % columns/time/.style={sci, column name=$\Delta t$}
     ]{../results/dnn_general_table_gd.dat}
@@ -21,7 +21,7 @@ We will now proceed with presenting results for a deep neural net using the Grad
 
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with the Adam optimizer\cite{kingma_adam:_2014}.}
+    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with the \textit{Adam} optimizer\cite{kingma_adam:_2014}.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -30,7 +30,7 @@ We will now proceed with presenting results for a deep neural net using the Grad
         columns/layers/.style={column name={Layers}},
         columns/neurons/.style={column name={Neurons}},
         columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
-        columns/r2/.style={column name=$R^2$},
+        columns/r2/.style={sci, column name=$R^2$},
         columns/mse/.style={sci, column name=$MSE$},
         % columns/time/.style={sci, column name=$\Delta t$}
     ]{../results/dnn_general_table_adam.dat}
@@ -56,10 +56,11 @@ We will now proceed with presenting results for a deep neural net using the Grad
 %     \label{tab:dnn_dropout_results}
 % \end{table}
 
+\subsubsection{Testing out optimal hyper parameters}
 From the table \ref{tab:dnn_general_results_adam} with Adam as optimizer, the results which gave us the best $R^2$ and $MSE$ were chosen to be run for $N_\mathrm{e}=10^6$ epochs. The results for this run can be seen in table \ref{tab:dnn_optimal_results_adam}.
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN $N_\mathrm{e}10^6$ run with a select set of hyper parameters which yielded the best $R^2$ scores in \ref{tab:dnn_general_results_adam}.}
+    \caption{Results for a DNN $N_\mathrm{e}=10^6$ run with a select set of hyper parameters which yielded the best $R^2$ scores in \ref{tab:dnn_general_results_adam}. Most of the hyper parameters inspected yields a $R^2$ score of more than four repeating digits.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -67,13 +68,26 @@ From the table \ref{tab:dnn_general_results_adam} with Adam as optimizer, the re
         columns/activation/.style={string type, column name={Activation}},
         columns/layers/.style={string type, column name={Layers}},
         columns/diff/.style={sci, column name=$\mathrm{max}(\varepsilon_{\mathrm{abs}})$},
-        columns/r2/.style={column name=$R^2$},
+        columns/r2/.style={sci, column name=$R^2$},
         columns/mse/.style={sci, column name=$MSE$},
     ]{../results/dnn_optimal_table_adam.dat}
     \label{tab:dnn_optimal_results_adam}
 \end{table}
 
+\subsubsection{Cost and Error} 
+\husk{FORANDRE HER TIL $L=[50]$!!!}
+The cost and error of a run with three layers and 10 neurons in each layers run for $10^6$ epochs can be viewed in figure \ref{fig:cost-error}.
+\begin{figure}
+    \centering
+    \includegraphics{../fig/cost_error.pdf}
+    \caption{The cost and error as it evolves for a Neural Net with three layers of 10 neurons each over $N_\mathrm{e}=10^6$ epochs. The Adam optimizer and $\tanh$ activation function was used.}
+    \label{fig:cost-error}
+\end{figure}
+
 \subsection{Forward Euler and finite difference}
 
 
 \subsection{Comparing DNN and Forward-Euler against the analytic solution}
+From the table \ref{tab:dnn_optimal_results_adam}, we will use the Adam optimizer and a single layer of 50 neurons together with the $\tanh$ activation function in further analysis and comparison against the Forward-Euler finite difference method.
+
+\subsection{Timing}
