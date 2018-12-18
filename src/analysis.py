@@ -640,10 +640,10 @@ def main():
     fw_data = load_finite_difference_data(fw_data_file_folder,
                                           try_get_pickle=True)
 
-    # plotTimingFW(fw_timing_data)
-    # plotTimingDNN(tf_timing_data)
+    plotTimingFW(fw_timing_data)
+    plotTimingDNN(tf_timing_data)
 
-    # plotTimingComparison(tf_data, fw_timing_data)
+    plotTimingComparison(tf_data, fw_timing_data)
 
     generateDNNTableData(
         tf_data, optimizer="adam",
@@ -673,7 +673,7 @@ def main():
     plot_2D_DNN(tf_optimal_data, fw_data, "fw_and_ana")
     plot_2D_DNN(tf_optimal_data, fw_data, "dnn_and_ana")
 
-    exit("COMPLETED")
+    print("**************** COMPLETED ****************")
 
 
 if __name__ == '__main__':
