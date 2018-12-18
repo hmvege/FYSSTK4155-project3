@@ -1,9 +1,9 @@
 \section{Results}
 \subsection{Deep Neural Net}
-We will now proceed with presenting results for a deep neural net using the Gradient Descent optimizer in table \ref{tab:dnn_general_results_gd}, put together using different hyper parameters. Similar hyper parameters but with the Adam optimizer can be viewed in the table \ref{tab:dnn_general_results_adam}. Combinations where put together from different amount of layers, neurons on each layer, activation functions and optimizers. The results were retrieved running $N_\mathrm{e}=10^5$ epochs. To evaluate the performance we look at the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse}. The $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
+We will now proceed with presenting results for a deep neural net using different hyper parameters. Results for the Gradient Descent optimizer can be seen in table \ref{tab:dnn_general_results_gd}. Similar hyper parameters but with the Adam optimizer can be viewed in the table \ref{tab:dnn_general_results_adam}. Different layer combinations were put together, in which the depth and neurons varied. These combinations were further tested out with different activation functions and optimizers. The results were retrieved running $N_\mathrm{e}=10^5$ epochs. To evaluate the performance we caluclated the $R^2$ score\eqref{eq:r2} and the MSE score\eqref{eq:mse} using the analytical results. The absolute error were also calculated, $\varepsilon_{\mathrm{abs}}=|u - \hat{u}|$, where $u$ is the numerical results and $\hat{u}$ is the analytical results.
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with \textit{gradient descent} as optimizer.}
+    \caption{Results for a DNN with different hyper parameters. The number of epochs was set to $N_\mathrm{e}=10^5$. Results presented are obtained with \textit{gradient descent} as optimizer.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -21,7 +21,7 @@ We will now proceed with presenting results for a deep neural net using the Grad
 
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN with different hyper parameters. The number of epoch was set to $N_\mathrm{e}=10^5$. Results presented are obtained with the \textit{Adam} optimizer\cite{kingma_adam:_2014}.}
+    \caption{Results for a DNN with different hyper parameters. The number of epochs was set to $N_\mathrm{e}=10^5$. Results presented are obtained with the \textit{Adam} optimizer\cite{kingma_adam:_2014}.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -60,7 +60,7 @@ We will now proceed with presenting results for a deep neural net using the Grad
 From the table \ref{tab:dnn_general_results_adam} with Adam as optimizer, the results which gave us the best $R^2$ and $MSE$ were chosen to be run for $N_\mathrm{e}=10^6$ epochs. The results for this run can be seen in table \ref{tab:dnn_optimal_results_adam}.
 \begin{table}[h!tb]
     \centering
-    \caption{Results for a DNN $N_\mathrm{e}=10^6$ run with a select set of hyper parameters which yielded the best $R^2$ scores in \ref{tab:dnn_general_results_adam}. Most of the hyper parameters inspected yields a $R^2$ score of more than four repeating digits.}
+    \caption{Results for a DNN $N_\mathrm{e}=10^6$ run with a select set of hyper parameters which yielded the best $R^2$ scores in table \ref{tab:dnn_general_results_adam}. Most of the hyper parameters inspected yields a $R^2$ score of more than four repeating digits.}
     \pgfplotstabletypeset[
         every head row/.style={before row=\toprule,after row=\midrule},
         every last row/.style={after row=\bottomrule},
@@ -92,7 +92,7 @@ We will use the hyper parameters given in table \ref{tab:dnn_optimal_params} as 
 
 \subsubsection{Cost and Error} 
 The cost and error of a run with three layers and 10 neurons in each layers run for $10^6$ epochs can be viewed in figure \ref{fig:cost-error}. The error is given as $\max \left( | u_\mathrm{analytic} - u_t | \right)$, where $u_t$ is the numerical approximation by the neural network. The Adam optimizer were used.
-\begin{figure}
+\begin{figure}[h!tb]
     \centering
     \includegraphics{../fig/cost_error.pdf}
     \caption{The cost and error as it evolves using hyper parameters given in table \ref{tab:dnn_optimal_params} and $N_\mathrm{e}=10^6$ epochs. Adam was used as an optimizer.}
@@ -103,7 +103,7 @@ The cost and error of a run with three layers and 10 neurons in each layers run 
 
 
 \subsection{Comparing DNN and Forward-Euler against the analytic solution}
-From the table \ref{tab:dnn_optimal_results_adam}, we will use the hyper parameters as given in table \ref{tab:dnn_optimal_params} in further analysis and comparison against the Forward-Euler finite difference method. The Forward-Euler method was run with $N_x=10$ and $N_t=100$, and a $\alpha=\Delta t / \Delta x^2=0.005$ in order to safely maintain the stability condition.
+From the table \ref{tab:dnn_optimal_results_adam}, we will use the hyper parameters as given in table \ref{tab:dnn_optimal_params} in further analysis and comparison against the Forward-Euler finite difference method. The Forward-Euler method was run with $N_x=10$ and $N_t=100$, and a $\alpha=\Delta t / \Delta x^2=0.005$ in order to safely maintain the stability condition. Note that the $z$-axis has not been scaled, such that the error may by first glance appear to be one the same order of magnitude.
 
 In figure \ref{fig:analytical-solution} we see the analytical solution as given for by \eqref{eq:pde-analytical-solution} for $N_t=10$ and $N_x=10$.
 \begin{figure}[h!tb]
@@ -128,7 +128,7 @@ In figure \ref{fig:3d-fw-comparison-plots} we see the results from the Forward-E
         \caption{Absolute error between analytical and Forward Euler.}
         \label{fig:fw-ana-diff-3d}
     \end{subfigure}
-    \caption{The forward Euler results \ref{fig:fw-3d}, and the absolute error between analytical and Forward Euler\ref{fig:fw-ana-diff-3d}. The Forward Euler was run with $N_x=10$ and $N_t=100$ and $\alpha=\Delta t / \Delta x^2=0.5$.}
+    \caption{The forward Euler results \ref{fig:fw-3d}, and the absolute error between analytical and Forward Euler \ref{fig:fw-ana-diff-3d}. The Forward Euler was run with $N_x=10$ and $N_t=100$ and $\alpha=\Delta t / \Delta x^2=0.5$.}
     \label{fig:3d-fw-comparison-plots}
 \end{figure}
 
@@ -147,11 +147,11 @@ As an example, an increased spatial resolution of $N_x=100$ and subsequently the
         \caption{Absolute error between analytical and Forward Euler.}
         \label{fig:fw-ana-diff-3d-highres}
     \end{subfigure}
-    \caption{The forward Euler results \ref{fig:fw-3d}, and the absolute error between analytical and Forward Euler\ref{fig:fw-ana-diff-3d}. The Forward Euler was run with $N_x=100$ and $N_t=10000$ and $\alpha=\Delta t / \Delta x^2=0.5$.}
+    \caption{The forward Euler results \ref{fig:fw-3d}, and the absolute error between analytical and Forward Euler \ref{fig:fw-ana-diff-3d}. The Forward Euler was run with $N_x=100$ and $N_t=10000$ and $\alpha=\Delta t / \Delta x^2=0.5$.}
     \label{fig:3d-fw-comparison-plots-spatial-highres}
 \end{figure}
 
-In figure \ref{fig:3d-dnn-comparison-plots} we see the resulting surface plot given by the neural net for a optimal set of parameters\ref{tab:dnn_optimal_params}.
+In figure \ref{fig:3d-dnn-comparison-plots} we see the resulting surface plot given by the neural net for a optimal set of parameters seen in table \ref{tab:dnn_optimal_params}.
 \begin{figure}[h!tb]
     \centering
     \begin{subfigure}{0.5\textwidth}

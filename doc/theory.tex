@@ -117,7 +117,7 @@ With a keen eye we can recognize this as a simple iterative matrix equation,
     V^{j+1} = (I - \alpha D) V^j,
     \label{eq:fw-euler-matrix}
 \end{align}
-with $I$ simply being the identity matrix and $D$ being a tridiagonal matrix of with $-1$ along the of-diagonals and $2$ at the diagonal.
+with $I$ simply being the identity matrix and $D$ being a tridiagonal matrix of with $-1$ along the off-diagonals and $2$ at the diagonal.
 % \begin{align}
 %     D = \begin{pmatrix}
 %         2 & -1 & 0 & \cdots & \cdots & 0 \\
@@ -128,7 +128,7 @@ with $I$ simply being the identity matrix and $D$ being a tridiagonal matrix of 
 %         0 & \cdots & \cdots & \cdots & -1 & 2 \\
 %     \end{pmatrix}
 % \end{align}
-The stability condition of Forward Euler is given as $\alpha = \frac{\Delta t}{\Delta x^2} \leq 1/2$. In other words, $\Delta t \leq 1/2\Delta x^2$. We will simply refer to \citet[ch. 10.2.1]{hjorth-jensen_computational_2015} for a derivation of this condition.
+The stability condition of Forward Euler is given as $\alpha = \frac{\Delta t}{\Delta x^2} \leq \frac{1}{2}$. In other words, $\Delta t \leq \frac{1}{2}\Delta x^2$. We will simply refer to \citet[ch. 10.2.1]{hjorth-jensen_computational_2015} for a derivation of this condition.
 
 \subsection{Deep Neural Networks and PDEs}
 A full derivation of DNNs will not be given here\footnote{A \textit{more} complete derivation can be found \href{https://github.com/hmvege/StatML/blob/master/doc/backpropagation.pdf}{here}.}, as we will mainly focus on how to apply DNNs to solving PDEs. The derivation will closely follow the one given by \citet{hein-odenn}. The neural net we will utilize is a \textit{Multilayer Perceptron}. To apply it to solving a PDE, we must begin with defining an expression for our PDE. We write our general PDE as,
@@ -143,12 +143,12 @@ We have $f$ given to use as some function of $x$, $g(x, t)$ and its derivatives.
 \end{align}
 $N(x, t, P)$ is the output from the neural network and $P$ is the weights and biases of the network. As we can see \eqref{eq:pde-general-trial-solution} is written as a sum of two parts, $h_1(x, t)$ and $h_2(x, t, N(x, t, P))$, where $h_1(x, t)$ ensures that $g_t(x, t)$ satisfies a set of boundary conditions\cite{lagaris_artificial_1998}. The boundary conditions \eqref{eq:boundary-conditions} and the initial conditions \eqref{eq:initial-conds}, allows us to make a guess for the $h_1(x, t)$ and $h_2(x, t, N(x, t, P))$.
 
-Having $h_1(x, t)$ as,
+With $h_1(x, t)$ set as,
 \begin{align}
-    h_1 (x, t) = (1 - t) \sin (\pi x / L)
+    h_1 (x, t) = (1 - t) \sin (\pi x / L),
     \label{eq:h1}
 \end{align}
-which at $t=0$ gives $h_1(x,0) = \sin(\pi x / L)$ which satisfies \eqref{eq:initial-conds}. And for $x=0, L$ we get $h_1(x,0)=h_1(x,L)=0$. We now look towards $h_2$.
+will at $t=0$ give us $h_1(x,0) = \sin(\pi x / L)$ which satisfies \eqref{eq:initial-conds}. And for $x=0, L$ we get $h_1(x,0)=h_1(x,L)=0$. We now look towards $h_2$.
 \begin{align}
     h_2(x,t,N(x,t,P)) = x (1 - x/L)t N(x, t, P)
     \label{eq:h2}
